@@ -1,4 +1,3 @@
-cat << 'EOF' > infra/schema.sql
 -- CareerOps initial schema (PostgreSQL + pgvector)
 -- Target DB: careerops
 -- User: careerops

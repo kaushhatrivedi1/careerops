@@ -1,0 +1,563 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CareerOps Fit Studio</title>
+  <style>
+    :root {
+      --bg-1: #0f1722;
+      --bg-2: #132a3d;
+      --bg-3: #2a1f2d;
+      --ink: #e7edf4;
+      --accent: #e76f51;
+      --accent-2: #38bdf8;
+      --panel: rgba(17, 25, 39, 0.88);
+      --ok: #7dd3a4;
+      --warn: #f3c969;
+      --bad: #ff8a80;
+      --shadow: 0 16px 40px rgba(0, 0, 0, 0.35);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      color: var(--ink);
+      background: radial-gradient(circle at 8% 20%, var(--bg-3), transparent 36%),
+                  radial-gradient(circle at 88% 12%, var(--bg-2), transparent 40%),
+                  linear-gradient(155deg, #0b1320 0%, var(--bg-1) 75%);
+      font-family: "Space Grotesk", "Avenir Next", "Segoe UI", sans-serif;
+      line-height: 1.4;
+    }
+
+    .orb {
+      position: fixed;
+      width: 320px;
+      height: 320px;
+      border-radius: 50%;
+      filter: blur(18px);
+      opacity: 0.25;
+      pointer-events: none;
+      animation: drift 11s ease-in-out infinite alternate;
+    }
+
+    .orb.one {
+      top: -60px;
+      left: -50px;
+      background: #e76f51;
+    }
+
+    .orb.two {
+      bottom: -80px;
+      right: -40px;
+      background: #38bdf8;
+      animation-duration: 13s;
+    }
+
+    @keyframes drift {
+      from { transform: translateY(0px) scale(1); }
+      to { transform: translateY(24px) scale(1.08); }
+    }
+
+    .page {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 28px 18px 32px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .hero {
+      display: grid;
+      grid-template-columns: 1.3fr 1fr;
+      gap: 18px;
+      margin-bottom: 18px;
+      align-items: end;
+    }
+
+    .headline {
+      font-size: clamp(1.8rem, 2.5vw, 2.8rem);
+      letter-spacing: -0.02em;
+      margin: 0 0 8px;
+      line-height: 1.05;
+    }
+
+    .sub {
+      margin: 0;
+      max-width: 60ch;
+      color: #b7c7d8;
+    }
+
+    .api-config {
+      background: var(--panel);
+      border: 1px solid rgba(167, 183, 201, 0.18);
+      border-radius: 16px;
+      padding: 14px;
+      box-shadow: var(--shadow);
+    }
+
+    .tag {
+      display: inline-block;
+      margin-bottom: 8px;
+      font-size: 0.75rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      color: #9fb5c8;
+      text-transform: uppercase;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: 1.1fr 1fr;
+      gap: 18px;
+    }
+
+    .panel {
+      background: var(--panel);
+      border: 1px solid rgba(167, 183, 201, 0.16);
+      border-radius: 16px;
+      padding: 16px;
+      box-shadow: var(--shadow);
+      animation: reveal 420ms ease both;
+    }
+
+    @keyframes reveal {
+      from { transform: translateY(12px); opacity: 0; }
+      to { transform: translateY(0); opacity: 1; }
+    }
+
+    .stack {
+      display: grid;
+      gap: 12px;
+    }
+
+    label {
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: #b8c7d6;
+    }
+
+    input, textarea {
+      width: 100%;
+      border: 1px solid #2e4258;
+      border-radius: 10px;
+      padding: 10px 12px;
+      font: inherit;
+      color: var(--ink);
+      background: #0f1c2b;
+      transition: border-color .2s ease, box-shadow .2s ease;
+    }
+
+    textarea {
+      min-height: 180px;
+      resize: vertical;
+    }
+
+    input:focus, textarea:focus {
+      border-color: var(--accent-2);
+      outline: none;
+      box-shadow: 0 0 0 3px rgba(38, 109, 211, 0.17);
+    }
+
+    .row {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    .actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      align-items: center;
+    }
+
+    button {
+      border: 0;
+      border-radius: 10px;
+      padding: 10px 14px;
+      font: inherit;
+      font-weight: 700;
+      cursor: pointer;
+      transition: transform .15s ease, opacity .15s ease;
+    }
+
+    button:hover {
+      transform: translateY(-1px);
+    }
+
+    button:disabled {
+      opacity: 0.6;
+      cursor: wait;
+      transform: none;
+    }
+
+    .btn-primary {
+      background: linear-gradient(120deg, var(--accent), #db7c26);
+      color: #fff;
+    }
+
+    .btn-secondary {
+      background: #223449;
+      color: #d7e5f2;
+    }
+
+    .status {
+      font-size: 0.9rem;
+      color: #9bb0c4;
+      margin: 0;
+    }
+
+    .metric-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+      margin-bottom: 12px;
+    }
+
+    .metric {
+      background: #111f31;
+      border-radius: 12px;
+      border: 1px solid rgba(167, 183, 201, 0.16);
+      padding: 10px;
+    }
+
+    .metric .k {
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.07em;
+      color: #92a9bd;
+      margin: 0 0 6px;
+    }
+
+    .metric .v {
+      margin: 0;
+      font-size: 1.35rem;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+    }
+
+    .pill {
+      border-radius: 999px;
+      display: inline-block;
+      padding: 4px 10px;
+      font-size: 0.78rem;
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+
+    .good { color: var(--ok); background: #113127; }
+    .warn { color: var(--warn); background: #3d2f10; }
+    .bad { color: var(--bad); background: #3b1718; }
+
+    .chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .chip {
+      background: #102135;
+      border: 1px solid rgba(167, 183, 201, 0.28);
+      border-radius: 999px;
+      padding: 4px 10px;
+      font-size: 0.83rem;
+    }
+
+    .list {
+      margin: 0;
+      padding-left: 18px;
+    }
+
+    .list li { margin-bottom: 6px; }
+
+    pre {
+      margin: 0;
+      background: #0f172a;
+      color: #dbeafe;
+      border-radius: 10px;
+      padding: 12px;
+      max-height: 240px;
+      overflow: auto;
+      font-size: 0.8rem;
+    }
+
+    @media (max-width: 920px) {
+      .hero,
+      .grid {
+        grid-template-columns: 1fr;
+      }
+      .metric-grid {
+        grid-template-columns: 1fr 1fr;
+      }
+    }
+
+    @media (max-width: 560px) {
+      .row,
+      .metric-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="orb one"></div>
+  <div class="orb two"></div>
+  <main class="page">
+    <section class="hero">
+      <div>
+        <h1 class="headline">CareerOps Fit Studio</h1>
+        <p class="sub">Score resume-job fit with deterministic + ML outputs, inspect ATS risk, and see concrete keyword gaps to improve before applying.</p>
+      </div>
+      <div class="api-config">
+        <label for="apiBase">API Base URL</label>
+        <input id="apiBase" value="http://localhost:8000" />
+      </div>
+    </section>
+
+    <section class="grid">
+      <article class="panel">
+        <span class="tag">Input</span>
+        <div class="stack">
+          <div class="row">
+            <div>
+              <label for="resumeId">Resume ID (optional)</label>
+              <input id="resumeId" placeholder="uuid-or-custom" />
+            </div>
+            <div>
+              <label for="jobId">Job ID (optional)</label>
+              <input id="jobId" placeholder="uuid-or-custom" />
+            </div>
+          </div>
+
+          <div>
+            <label for="resumeText">Resume Text</label>
+            <textarea id="resumeText" placeholder="Paste resume content here"></textarea>
+          </div>
+
+          <div>
+            <label for="jobText">Job Description Text</label>
+            <textarea id="jobText" placeholder="Paste job description here"></textarea>
+          </div>
+
+          <div class="actions">
+            <button class="btn-primary" id="computeBtn">Compute Fit</button>
+            <button class="btn-secondary" id="sampleBtn">Load Sample</button>
+            <label>
+              <input type="checkbox" id="useMl" checked />
+              Use ML model when available
+            </label>
+          </div>
+          <p class="status" id="statusLine">Ready.</p>
+        </div>
+      </article>
+
+      <article class="panel">
+        <span class="tag">Output</span>
+        <div id="emptyState" class="status">Run a score to see fit index, model output, ATS diagnostics, and recommendation traces.</div>
+        <div id="resultView" style="display:none">
+          <div id="fitBadge" class="pill warn">Awaiting score</div>
+          <div class="metric-grid">
+            <div class="metric">
+              <p class="k">Fit Index</p>
+              <p class="v" id="fitIndex">-</p>
+            </div>
+            <div class="metric">
+              <p class="k">ML Fit Probability</p>
+              <p class="v" id="mlProb">-</p>
+            </div>
+            <div class="metric">
+              <p class="k">Semantic</p>
+              <p class="v" id="semanticScore">-</p>
+            </div>
+            <div class="metric">
+              <p class="k">Keyword Coverage</p>
+              <p class="v" id="keywordCoverage">-</p>
+            </div>
+            <div class="metric">
+              <p class="k">ATS Risk</p>
+              <p class="v" id="atsRisk">-</p>
+            </div>
+            <div class="metric">
+              <p class="k">Model Status</p>
+              <p class="v" id="modelStatus">-</p>
+            </div>
+          </div>
+
+          <label>Top Missing Keywords</label>
+          <div class="chips" id="missingKeywords"></div>
+
+          <label style="margin-top:10px; display:block;">Top Matched Keywords</label>
+          <div class="chips" id="matchedKeywords"></div>
+
+          <label style="margin-top:10px; display:block;">Recommendations</label>
+          <ul class="list" id="recommendations"></ul>
+
+          <label style="margin-top:10px; display:block;">Raw Explanation JSON</label>
+          <pre id="rawJson"></pre>
+        </div>
+      </article>
+    </section>
+  </main>
+
+  <script>
+    const els = {
+      apiBase: document.getElementById("apiBase"),
+      resumeId: document.getElementById("resumeId"),
+      jobId: document.getElementById("jobId"),
+      resumeText: document.getElementById("resumeText"),
+      jobText: document.getElementById("jobText"),
+      useMl: document.getElementById("useMl"),
+      computeBtn: document.getElementById("computeBtn"),
+      sampleBtn: document.getElementById("sampleBtn"),
+      statusLine: document.getElementById("statusLine"),
+      emptyState: document.getElementById("emptyState"),
+      resultView: document.getElementById("resultView"),
+      fitBadge: document.getElementById("fitBadge"),
+      fitIndex: document.getElementById("fitIndex"),
+      mlProb: document.getElementById("mlProb"),
+      semanticScore: document.getElementById("semanticScore"),
+      keywordCoverage: document.getElementById("keywordCoverage"),
+      atsRisk: document.getElementById("atsRisk"),
+      modelStatus: document.getElementById("modelStatus"),
+      missingKeywords: document.getElementById("missingKeywords"),
+      matchedKeywords: document.getElementById("matchedKeywords"),
+      recommendations: document.getElementById("recommendations"),
+      rawJson: document.getElementById("rawJson")
+    };
+
+    function formatPercent(value) {
+      if (value === null || value === undefined || Number.isNaN(value)) {
+        return "-";
+      }
+      return (Number(value) * 100).toFixed(1) + "%";
+    }
+
+    function formatScore(value) {
+      if (value === null || value === undefined || Number.isNaN(value)) {
+        return "-";
+      }
+      return Number(value).toFixed(2);
+    }
+
+    function setBadge(fitIndex) {
+      els.fitBadge.className = "pill";
+      if (fitIndex >= 75) {
+        els.fitBadge.classList.add("good");
+        els.fitBadge.textContent = "Strong fit";
+      } else if (fitIndex >= 50) {
+        els.fitBadge.classList.add("warn");
+        els.fitBadge.textContent = "Moderate fit";
+      } else {
+        els.fitBadge.classList.add("bad");
+        els.fitBadge.textContent = "Low fit";
+      }
+    }
+
+    function renderKeywords(container, keywords) {
+      container.innerHTML = "";
+      if (!keywords || !keywords.length) {
+        container.innerHTML = "<span class=\"chip\">None</span>";
+        return;
+      }
+      keywords.forEach((word) => {
+        const chip = document.createElement("span");
+        chip.className = "chip";
+        chip.textContent = word;
+        container.appendChild(chip);
+      });
+    }
+
+    function renderRecommendations(recommendations) {
+      els.recommendations.innerHTML = "";
+      if (!recommendations || !recommendations.length) {
+        const li = document.createElement("li");
+        li.textContent = "No recommendations generated.";
+        els.recommendations.appendChild(li);
+        return;
+      }
+      recommendations.forEach((rec) => {
+        const li = document.createElement("li");
+        let msg = rec.message || rec.type || "Recommendation";
+        if (Array.isArray(rec.missing_keywords) && rec.missing_keywords.length) {
+          msg += " Missing: " + rec.missing_keywords.join(", ");
+        }
+        li.textContent = msg;
+        els.recommendations.appendChild(li);
+      });
+    }
+
+    async function computeFit() {
+      const resumeText = els.resumeText.value.trim();
+      const jobText = els.jobText.value.trim();
+      if (!resumeText || !jobText) {
+        els.statusLine.textContent = "Resume text and job text are required.";
+        return;
+      }
+
+      const payload = {
+        resume_text: resumeText,
+        job_text: jobText,
+        resume_id: els.resumeId.value.trim() || null,
+        job_id: els.jobId.value.trim() || null,
+        use_ml_model: els.useMl.checked
+      };
+
+      els.computeBtn.disabled = true;
+      els.statusLine.textContent = "Computing...";
+
+      try {
+        const base = els.apiBase.value.replace(/\/$/, "");
+        const response = await fetch(base + "/api/v1/matches/compute", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload)
+        });
+        if (!response.ok) {
+          const errText = await response.text();
+          throw new Error("Request failed: " + response.status + " " + errText);
+        }
+
+        const data = await response.json();
+        els.emptyState.style.display = "none";
+        els.resultView.style.display = "block";
+
+        els.fitIndex.textContent = formatScore(data.fit_index);
+        els.mlProb.textContent = formatPercent(data.ml_fit_probability);
+        els.semanticScore.textContent = formatPercent(data.semantic_score);
+        els.keywordCoverage.textContent = formatPercent(data.keyword_coverage);
+        els.atsRisk.textContent = formatPercent(data.ats_risk_score);
+        els.modelStatus.textContent = data.ml_model_info && data.ml_model_info.loaded ? "Loaded" : "Fallback";
+        setBadge(Number(data.fit_index || 0));
+        renderKeywords(els.missingKeywords, data.top_missing_keywords || []);
+        renderKeywords(els.matchedKeywords, data.top_matched_keywords || []);
+        renderRecommendations(data.explanation_json && data.explanation_json.recommendations);
+        els.rawJson.textContent = JSON.stringify(data.explanation_json || {}, null, 2);
+        els.statusLine.textContent = "Score computed.";
+      } catch (error) {
+        els.statusLine.textContent = "Error: " + error.message;
+      } finally {
+        els.computeBtn.disabled = false;
+      }
+    }
+
+    function loadSample() {
+      els.resumeText.value =
+        "Backend engineer with 5 years experience building APIs in Python and FastAPI. " +
+        "Worked with PostgreSQL, Docker, AWS, CI/CD, and microservices. " +
+        "Education: BS Computer Science.";
+      els.jobText.value =
+        "We are hiring a backend engineer. Required skills: Python, FastAPI, SQL, PostgreSQL, " +
+        "cloud infrastructure, Docker, REST API design, CI/CD. Education preferred in CS.";
+      els.statusLine.textContent = "Sample loaded.";
+    }
+
+    els.computeBtn.addEventListener("click", computeFit);
+    els.sampleBtn.addEventListener("click", loadSample);
+  </script>
+</body>
+</html>
