@@ -144,3 +144,17 @@ def compute_fit_score(resume_text: str, job_text: str) -> ScoreResult:
         top_missing_keywords=top_missing,
         top_matched_keywords=top_matched,
     )
+
+
+def build_suggested_resume_draft(resume_text: str, missing_keywords: list[str]) -> str:
+    """
+    Build a lightweight resume draft suggestion from computed gaps.
+    """
+    base = (resume_text or "").strip()
+    if not missing_keywords:
+        return base
+
+    additions = ", ".join(missing_keywords[:8])
+    if "skills" in base.lower():
+        return f"{base}\n\nTargeted keywords to add evidence for: {additions}"
+    return f"{base}\n\nSkills: {additions}"

@@ -3,11 +3,12 @@ Resumes router
 """
 from fastapi import APIRouter, Depends, HTTPException, UploadFile, File
 from sqlalchemy.ext.asyncio import AsyncSession
-from uuid import UUID
 import uuid
 
 from app.db.session import get_db
 from app.models.resume import Resume
+from app.models.user import User
+from app.core.security import get_authenticated_user
 from pydantic import BaseModel
 from datetime import datetime
 
@@ -30,14 +31,15 @@ class ResumeResponse(BaseModel):
 async def create_resume(
     file: UploadFile = File(...),
     version_tag: str = "v1",
-    db: AsyncSession = Depends(get_db)
+    db: AsyncSession = Depends(get_db),
+    current_user: User = Depends(get_authenticated_user),
 ):
     """Upload a new resume"""
     # TODO: Upload file to MinIO/S3
     file_url = f"resumes/{uuid.uuid4()}-{file.filename}"
     
     resume = Resume(
-        user_id="temp-user-id",  # TODO: Get from auth
+        user_id=current_user.id,
         version_tag=version_tag,
         file_url=file_url,
         raw_text="",  # TODO: Extract text from file
@@ -56,10 +58,13 @@ async def create_resume(
 
 
 @router.get("/")
-async def list_resumes(user_id: str = "temp-user-id", db: AsyncSession = Depends(get_db)):
+async def list_resumes(
+    db: AsyncSession = Depends(get_db),
+    current_user: User = Depends(get_authenticated_user),
+):
     """List all resumes for a user"""
     from sqlalchemy import select
-    result = await db.execute(select(Resume).where(Resume.user_id == user_id))
+    result = await db.execute(select(Resume).where(Resume.user_id == current_user.id))
     resumes = result.scalars().all()
     
     return {
@@ -77,11 +82,17 @@ async def list_resumes(user_id: str = "temp-user-id", db: AsyncSession = Depends
 
 
 @router.get("/{resume_id}")
-async def get_resume(resume_id: str, db: AsyncSession = Depends(get_db)):
+async def get_resume(
+    resume_id: str,
+    db: AsyncSession = Depends(get_db),
+    current_user: User = Depends(get_authenticated_user),
+):
     """Get resume by ID"""
     resume = await db.get(Resume, resume_id)
     if not resume:
         raise HTTPException(status_code=404, detail="Resume not found")
+    if str(resume.user_id) != str(current_user.id):
+        raise HTTPException(status_code=403, detail="Forbidden")
     
     return {
         "id": str(resume.id),
@@ -95,14 +106,19 @@ async def get_resume(resume_id: str, db: AsyncSession = Depends(get_db)):
 
 
 @router.delete("/{resume_id}")
-async def delete_resume(resume_id: str, db: AsyncSession = Depends(get_db)):
+async def delete_resume(
+    resume_id: str,
+    db: AsyncSession = Depends(get_db),
+    current_user: User = Depends(get_authenticated_user),
+):
     """Delete resume"""
     resume = await db.get(Resume, resume_id)
     if not resume:
         raise HTTPException(status_code=404, detail="Resume not found")
+    if str(resume.user_id) != str(current_user.id):
+        raise HTTPException(status_code=403, detail="Forbidden")
     
     await db.delete(resume)
     await db.commit()
     
     return {"message": "Resume deleted successfully"}
-

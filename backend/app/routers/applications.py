@@ -6,7 +6,10 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from datetime import datetime
 
 from app.db.session import get_db
-from app.models.job import Application, application_status
+from app.models.job import Application
+from app.models.resume import Resume
+from app.models.user import User
+from app.core.security import get_authenticated_user
 from pydantic import BaseModel
 
 router = APIRouter()
@@ -30,12 +33,22 @@ class ApplicationResponse(BaseModel):
 
 
 @router.post("/", response_model=ApplicationResponse)
-async def create_application(app_data: ApplicationCreate, db: AsyncSession = Depends(get_db)):
+async def create_application(
+    app_data: ApplicationCreate,
+    db: AsyncSession = Depends(get_db),
+    current_user: User = Depends(get_authenticated_user),
+):
     """Create a new application"""
     # TODO: Validate job_id and resume_id exist and belong to user
     
+    resume = await db.get(Resume, app_data.resume_id)
+    if not resume:
+        raise HTTPException(status_code=404, detail="Resume not found")
+    if str(resume.user_id) != str(current_user.id):
+        raise HTTPException(status_code=403, detail="Resume does not belong to user")
+
     app = Application(
-        user_id="temp-user-id",  # TODO: Get from auth
+        user_id=current_user.id,
         job_id=app_data.job_id,
         resume_id=app_data.resume_id,
         status=app_data.status
@@ -61,13 +74,13 @@ async def list_applications(
     status: str = None,
     limit: int = 50,
     offset: int = 0,
-    db: AsyncSession = Depends(get_db)
+    db: AsyncSession = Depends(get_db),
+    current_user: User = Depends(get_authenticated_user),
 ):
     """List applications for current user"""
     from sqlalchemy import select
     
-    user_id = "temp-user-id"  # TODO: Get from auth
-    query = select(Application).where(Application.user_id == user_id)
+    query = select(Application).where(Application.user_id == current_user.id)
     
     if status:
         query = query.where(Application.status == status)
@@ -97,12 +110,15 @@ async def update_application(
     app_id: str,
     status: str,
     notes: str = None,
-    db: AsyncSession = Depends(get_db)
+    db: AsyncSession = Depends(get_db),
+    current_user: User = Depends(get_authenticated_user),
 ):
     """Update application status"""
     app = await db.get(Application, app_id)
     if not app:
         raise HTTPException(status_code=404, detail="Application not found")
+    if str(app.user_id) != str(current_user.id):
+        raise HTTPException(status_code=403, detail="Forbidden")
     
     app.status = status
     if notes:
@@ -117,4 +133,3 @@ async def update_application(
         "status": app.status,
         "updated_at": app.updated_at
     }
-

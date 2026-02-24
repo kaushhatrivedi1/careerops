@@ -40,6 +40,7 @@ class Settings(BaseSettings):
     JWT_SECRET_KEY: str = "change-jwt-secret-in-production"
     JWT_ALGORITHM: str = "HS256"
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 30
+    GOOGLE_CLIENT_ID: Optional[str] = None
     
     # MinIO
     MINIO_ENDPOINT: str = "localhost:9000"

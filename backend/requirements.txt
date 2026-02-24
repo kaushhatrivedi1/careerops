@@ -19,6 +19,7 @@ alembic>=1.13.1
 python-jose[cryptography]>=3.3.0
 passlib[bcrypt]>=1.7.4
 python-oauth2-client>=0.3.0
+google-auth>=2.34.0
 
 # ========================
 # Redis & Celery
@@ -82,4 +83,3 @@ isort>=5.13.2
 flake8>=7.0.0
 mypy>=1.8.0
 pre-commit>=3.6.0
-

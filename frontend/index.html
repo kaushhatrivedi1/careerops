@@ -6,17 +6,21 @@
   <title>CareerOps Fit Studio</title>
   <style>
     :root {
-      --bg-1: #0f1722;
-      --bg-2: #132a3d;
-      --bg-3: #2a1f2d;
-      --ink: #e7edf4;
-      --accent: #e76f51;
-      --accent-2: #38bdf8;
-      --panel: rgba(17, 25, 39, 0.88);
-      --ok: #7dd3a4;
-      --warn: #f3c969;
-      --bad: #ff8a80;
-      --shadow: 0 16px 40px rgba(0, 0, 0, 0.35);
+      --bg: #070b14;
+      --bg-soft: #0e1730;
+      --panel: rgba(12, 20, 40, 0.62);
+      --panel-border: rgba(142, 165, 219, 0.24);
+      --text: #e8f0ff;
+      --muted: #9fb3d9;
+      --accent: #00d1ff;
+      --accent-2: #6d7dff;
+      --ok: #53e3a6;
+      --warn: #ffcb5e;
+      --bad: #ff7f9b;
+      --shadow: 0 22px 50px rgba(2, 6, 18, 0.45);
+      --radius-lg: 20px;
+      --radius-md: 14px;
+      --radius-sm: 10px;
     }
 
     * {
@@ -25,109 +29,265 @@
 
     body {
       margin: 0;
+      color: var(--text);
       min-height: 100vh;
-      color: var(--ink);
-      background: radial-gradient(circle at 8% 20%, var(--bg-3), transparent 36%),
-                  radial-gradient(circle at 88% 12%, var(--bg-2), transparent 40%),
-                  linear-gradient(155deg, #0b1320 0%, var(--bg-1) 75%);
-      font-family: "Space Grotesk", "Avenir Next", "Segoe UI", sans-serif;
-      line-height: 1.4;
+      font-family: "Sora", "Space Grotesk", "Segoe UI", sans-serif;
+      background: var(--bg);
+      overflow-x: hidden;
     }
 
-    .orb {
+    .fx-bg {
       position: fixed;
-      width: 320px;
-      height: 320px;
-      border-radius: 50%;
-      filter: blur(18px);
-      opacity: 0.25;
+      inset: 0;
+      z-index: -2;
+      background:
+        radial-gradient(42rem 22rem at 6% 12%, rgba(0, 209, 255, 0.18), transparent 65%),
+        radial-gradient(34rem 20rem at 86% 18%, rgba(109, 125, 255, 0.2), transparent 70%),
+        radial-gradient(38rem 24rem at 50% 88%, rgba(123, 97, 255, 0.16), transparent 72%),
+        linear-gradient(150deg, #05080f, #091125 55%, #060b16);
+      background-size: 130% 130%;
+      animation: bgDrift 18s ease-in-out infinite alternate;
+    }
+
+    .grid-noise {
+      position: fixed;
+      inset: 0;
+      z-index: -1;
       pointer-events: none;
-      animation: drift 11s ease-in-out infinite alternate;
+      opacity: 0.26;
+      background-image:
+        linear-gradient(rgba(127, 158, 255, 0.09) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(127, 158, 255, 0.09) 1px, transparent 1px);
+      background-size: 44px 44px;
+      mask-image: radial-gradient(circle at 50% 40%, black 35%, transparent 88%);
     }
 
-    .orb.one {
-      top: -60px;
-      left: -50px;
-      background: #e76f51;
+    .aurora {
+      position: fixed;
+      width: 38vw;
+      height: 38vw;
+      filter: blur(26px);
+      opacity: 0.28;
+      border-radius: 999px;
+      pointer-events: none;
+      animation: float 14s ease-in-out infinite alternate;
+      z-index: -1;
     }
 
-    .orb.two {
-      bottom: -80px;
-      right: -40px;
-      background: #38bdf8;
-      animation-duration: 13s;
+    .aurora.a {
+      top: -8vw;
+      left: -8vw;
+      background: #00d1ff;
     }
 
-    @keyframes drift {
-      from { transform: translateY(0px) scale(1); }
-      to { transform: translateY(24px) scale(1.08); }
+    .aurora.b {
+      bottom: -10vw;
+      right: -10vw;
+      background: #6d7dff;
+      animation-delay: 1.2s;
+      animation-duration: 16s;
     }
 
-    .page {
-      max-width: 1100px;
-      margin: 0 auto;
-      padding: 28px 18px 32px;
-      position: relative;
-      z-index: 1;
+    @keyframes bgDrift {
+      from {
+        background-position: 0% 0%;
+      }
+      to {
+        background-position: 8% 12%;
+      }
+    }
+
+    @keyframes float {
+      from {
+        transform: translateY(0px) scale(1);
+      }
+      to {
+        transform: translateY(26px) scale(1.08);
+      }
+    }
+
+    .sweep {
+      position: fixed;
+      inset: -20% -30%;
+      z-index: -1;
+      pointer-events: none;
+      background: linear-gradient(
+        110deg,
+        transparent 35%,
+        rgba(0, 209, 255, 0.06) 48%,
+        rgba(109, 125, 255, 0.08) 52%,
+        transparent 65%
+      );
+      animation: sweep 9s linear infinite;
+    }
+
+    @keyframes sweep {
+      from {
+        transform: translateX(-12%) translateY(-4%) rotate(0.2deg);
+      }
+      to {
+        transform: translateX(12%) translateY(4%) rotate(-0.2deg);
+      }
+    }
+
+    .shell {
+      width: min(1240px, 94vw);
+      margin: 28px auto 34px;
+    }
+
+    .masthead {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 14px 16px;
+      border: 1px solid var(--panel-border);
+      border-radius: var(--radius-md);
+      background: linear-gradient(140deg, rgba(12, 20, 40, 0.7), rgba(13, 28, 60, 0.45));
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(8px);
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-weight: 700;
+      letter-spacing: 0.03em;
+      text-transform: uppercase;
+      font-size: 0.86rem;
+      color: #b8d7ff;
+    }
+
+    .dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 999px;
+      background: linear-gradient(135deg, var(--accent), var(--accent-2));
+      box-shadow: 0 0 18px rgba(0, 209, 255, 0.8);
+    }
+
+    .stamp {
+      color: var(--muted);
+      font-size: 0.82rem;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .stamp a {
+      color: #b9d3ff;
+      text-decoration: none;
+      border: 1px solid rgba(142, 165, 219, 0.3);
+      padding: 5px 10px;
+      border-radius: 999px;
+      font-size: 0.76rem;
+    }
+
+    .stamp a:hover {
+      border-color: rgba(0, 209, 255, 0.7);
     }
 
     .hero {
+      margin-top: 20px;
       display: grid;
+      gap: 14px;
       grid-template-columns: 1.3fr 1fr;
-      gap: 18px;
-      margin-bottom: 18px;
-      align-items: end;
+    }
+
+    .hero-card {
+      border: 1px solid var(--panel-border);
+      border-radius: var(--radius-lg);
+      background: var(--panel);
+      backdrop-filter: blur(10px);
+      padding: 22px;
+      box-shadow: var(--shadow);
     }
 
     .headline {
-      font-size: clamp(1.8rem, 2.5vw, 2.8rem);
-      letter-spacing: -0.02em;
-      margin: 0 0 8px;
-      line-height: 1.05;
+      margin: 0 0 10px;
+      font-size: clamp(2rem, 3vw, 3.2rem);
+      line-height: 1.04;
+      letter-spacing: -0.03em;
     }
 
     .sub {
       margin: 0;
-      max-width: 60ch;
-      color: #b7c7d8;
+      max-width: 62ch;
+      color: var(--muted);
     }
 
-    .api-config {
-      background: var(--panel);
-      border: 1px solid rgba(167, 183, 201, 0.18);
-      border-radius: 16px;
-      padding: 14px;
-      box-shadow: var(--shadow);
-    }
-
-    .tag {
-      display: inline-block;
-      margin-bottom: 8px;
-      font-size: 0.75rem;
-      font-weight: 700;
-      letter-spacing: 0.08em;
-      color: #9fb5c8;
+    .label {
+      margin: 0 0 8px;
+      font-size: 0.74rem;
       text-transform: uppercase;
+      letter-spacing: 0.09em;
+      color: #95b2df;
+      font-weight: 700;
     }
 
-    .grid {
+    input, textarea {
+      width: 100%;
+      border: 1px solid rgba(142, 165, 219, 0.24);
+      background: rgba(11, 21, 41, 0.9);
+      color: var(--text);
+      padding: 11px 12px;
+      border-radius: var(--radius-sm);
+      font: inherit;
+      transition: border-color .2s ease, box-shadow .2s ease, transform .2s ease;
+    }
+
+    input:focus, textarea:focus {
+      border-color: rgba(0, 209, 255, 0.7);
+      box-shadow: 0 0 0 3px rgba(0, 209, 255, 0.18);
+      outline: none;
+      transform: translateY(-1px);
+    }
+
+    .layout {
+      margin-top: 20px;
       display: grid;
-      grid-template-columns: 1.1fr 1fr;
-      gap: 18px;
+      gap: 16px;
+      grid-template-columns: 1.05fr 1fr;
     }
 
     .panel {
+      border: 1px solid var(--panel-border);
+      border-radius: var(--radius-lg);
       background: var(--panel);
-      border: 1px solid rgba(167, 183, 201, 0.16);
-      border-radius: 16px;
-      padding: 16px;
+      backdrop-filter: blur(10px);
+      padding: 18px;
       box-shadow: var(--shadow);
-      animation: reveal 420ms ease both;
+      animation: lift .45s ease both;
     }
 
-    @keyframes reveal {
-      from { transform: translateY(12px); opacity: 0; }
-      to { transform: translateY(0); opacity: 1; }
+    @keyframes lift {
+      from {
+        opacity: 0;
+        transform: translateY(12px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .panel-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+      margin-bottom: 12px;
+    }
+
+    .panel-title {
+      margin: 0;
+      font-size: 1.05rem;
+      letter-spacing: 0.01em;
+    }
+
+    .panel-meta {
+      margin: 4px 0 0;
+      color: var(--muted);
+      font-size: 0.82rem;
     }
 
     .stack {
@@ -135,38 +295,34 @@
       gap: 12px;
     }
 
-    label {
-      font-size: 0.85rem;
+    .group {
+      border: 1px solid rgba(142, 165, 219, 0.2);
+      border-radius: var(--radius-md);
+      padding: 12px;
+      background: rgba(8, 16, 30, 0.64);
+    }
+
+    .group-title {
+      margin: 0 0 10px;
+      font-size: 0.74rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: #9bb9e9;
       font-weight: 700;
-      color: #b8c7d6;
-    }
-
-    input, textarea {
-      width: 100%;
-      border: 1px solid #2e4258;
-      border-radius: 10px;
-      padding: 10px 12px;
-      font: inherit;
-      color: var(--ink);
-      background: #0f1c2b;
-      transition: border-color .2s ease, box-shadow .2s ease;
-    }
-
-    textarea {
-      min-height: 180px;
-      resize: vertical;
-    }
-
-    input:focus, textarea:focus {
-      border-color: var(--accent-2);
-      outline: none;
-      box-shadow: 0 0 0 3px rgba(38, 109, 211, 0.17);
     }
 
     .row {
       display: grid;
-      grid-template-columns: repeat(2, minmax(0, 1fr));
       gap: 10px;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    label {
+      display: block;
+      margin-bottom: 6px;
+      font-size: 0.84rem;
+      color: #c6d9f8;
+      font-weight: 600;
     }
 
     .actions {
@@ -178,12 +334,12 @@
 
     button {
       border: 0;
-      border-radius: 10px;
+      border-radius: var(--radius-sm);
       padding: 10px 14px;
       font: inherit;
       font-weight: 700;
       cursor: pointer;
-      transition: transform .15s ease, opacity .15s ease;
+      transition: transform .16s ease, opacity .16s ease;
     }
 
     button:hover {
@@ -191,68 +347,90 @@
     }
 
     button:disabled {
-      opacity: 0.6;
+      opacity: 0.62;
       cursor: wait;
       transform: none;
     }
 
     .btn-primary {
-      background: linear-gradient(120deg, var(--accent), #db7c26);
-      color: #fff;
+      background: linear-gradient(125deg, #00d1ff, #4f7fff 45%, #7b61ff);
+      color: #031126;
     }
 
     .btn-secondary {
-      background: #223449;
-      color: #d7e5f2;
+      background: linear-gradient(140deg, #24324f, #1b2740);
+      color: #dce8ff;
+      border: 1px solid rgba(142, 165, 219, 0.22);
     }
 
-    .status {
+    .status-box {
+      border-radius: var(--radius-sm);
+      border: 1px solid rgba(142, 165, 219, 0.2);
+      background: rgba(11, 22, 42, 0.74);
+      padding: 9px 10px;
+      color: var(--muted);
       font-size: 0.9rem;
-      color: #9bb0c4;
-      margin: 0;
     }
 
-    .metric-grid {
+    .metrics {
       display: grid;
-      grid-template-columns: repeat(2, minmax(0, 1fr));
       gap: 10px;
-      margin-bottom: 12px;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
     }
 
     .metric {
-      background: #111f31;
-      border-radius: 12px;
-      border: 1px solid rgba(167, 183, 201, 0.16);
+      border: 1px solid rgba(142, 165, 219, 0.18);
+      border-radius: var(--radius-md);
+      background: rgba(8, 19, 36, 0.75);
       padding: 10px;
     }
 
     .metric .k {
-      font-size: 0.75rem;
-      text-transform: uppercase;
-      letter-spacing: 0.07em;
-      color: #92a9bd;
       margin: 0 0 6px;
+      color: #8ea5cc;
+      font-size: 0.72rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      font-weight: 700;
     }
 
     .metric .v {
       margin: 0;
-      font-size: 1.35rem;
+      font-size: 1.38rem;
+      line-height: 1;
       font-weight: 800;
       letter-spacing: -0.02em;
     }
 
-    .pill {
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
       border-radius: 999px;
-      display: inline-block;
-      padding: 4px 10px;
-      font-size: 0.78rem;
+      padding: 6px 11px;
+      margin-bottom: 10px;
+      font-size: 0.8rem;
       font-weight: 700;
-      margin-bottom: 8px;
+      border: 1px solid transparent;
     }
 
-    .good { color: var(--ok); background: #113127; }
-    .warn { color: var(--warn); background: #3d2f10; }
-    .bad { color: var(--bad); background: #3b1718; }
+    .badge.good {
+      color: var(--ok);
+      background: rgba(26, 72, 56, 0.56);
+      border-color: rgba(83, 227, 166, 0.34);
+    }
+
+    .badge.warn {
+      color: var(--warn);
+      background: rgba(90, 67, 23, 0.55);
+      border-color: rgba(255, 203, 94, 0.36);
+    }
+
+    .badge.bad {
+      color: var(--bad);
+      background: rgba(95, 34, 49, 0.56);
+      border-color: rgba(255, 127, 155, 0.34);
+    }
 
     .chips {
       display: flex;
@@ -261,144 +439,217 @@
     }
 
     .chip {
-      background: #102135;
-      border: 1px solid rgba(167, 183, 201, 0.28);
+      border: 1px solid rgba(142, 165, 219, 0.24);
       border-radius: 999px;
-      padding: 4px 10px;
-      font-size: 0.83rem;
+      padding: 5px 10px;
+      font-size: 0.82rem;
+      background: rgba(11, 22, 41, 0.8);
+      color: #d6e6ff;
     }
 
     .list {
       margin: 0;
       padding-left: 18px;
+      color: #d0e0fb;
     }
 
-    .list li { margin-bottom: 6px; }
+    .list li {
+      margin-bottom: 7px;
+    }
 
     pre {
       margin: 0;
-      background: #0f172a;
-      color: #dbeafe;
-      border-radius: 10px;
-      padding: 12px;
-      max-height: 240px;
+      padding: 11px;
+      border-radius: var(--radius-sm);
+      border: 1px solid rgba(142, 165, 219, 0.2);
+      background: rgba(5, 12, 25, 0.92);
+      color: #bed4ff;
+      max-height: 220px;
       overflow: auto;
-      font-size: 0.8rem;
+      font-size: 0.78rem;
     }
 
-    @media (max-width: 920px) {
-      .hero,
-      .grid {
+    .result-stack {
+      display: grid;
+      gap: 12px;
+    }
+
+    .empty {
+      color: var(--muted);
+      font-size: 0.92rem;
+    }
+
+    @media (max-width: 980px) {
+      .hero, .layout {
         grid-template-columns: 1fr;
       }
-      .metric-grid {
-        grid-template-columns: 1fr 1fr;
+      .metrics {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
       }
     }
 
-    @media (max-width: 560px) {
-      .row,
-      .metric-grid {
+    @media (max-width: 640px) {
+      .shell {
+        width: 95vw;
+        margin-top: 16px;
+      }
+      .row, .metrics {
         grid-template-columns: 1fr;
+      }
+      .masthead {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 6px;
+      }
+      .hero-card, .panel {
+        padding: 14px;
       }
     }
   </style>
 </head>
 <body>
-  <div class="orb one"></div>
-  <div class="orb two"></div>
-  <main class="page">
+  <div class="fx-bg"></div>
+  <div class="grid-noise"></div>
+  <div class="sweep"></div>
+  <div class="aurora a"></div>
+  <div class="aurora b"></div>
+
+  <main class="shell">
+    <header class="masthead">
+      <div class="brand"><span class="dot"></span>CareerOps Studio</div>
+      <div class="stamp">
+        Real-time fit analysis and ATS intelligence
+        <a href="/history.html">View History</a>
+      </div>
+    </header>
+
     <section class="hero">
-      <div>
-        <h1 class="headline">CareerOps Fit Studio</h1>
-        <p class="sub">Score resume-job fit with deterministic + ML outputs, inspect ATS risk, and see concrete keyword gaps to improve before applying.</p>
-      </div>
-      <div class="api-config">
+      <article class="hero-card">
+        <h1 class="headline">Modern Resume Match Lab</h1>
+        <p class="sub">Upload a resume file, provide a public job URL, and get structured fit scoring with actionable changes and ML-assisted ranking.</p>
+      </article>
+      <article class="hero-card">
+        <p class="label">Backend</p>
         <label for="apiBase">API Base URL</label>
-        <input id="apiBase" value="http://localhost:8000" />
-      </div>
+        <input id="apiBase" value="http://localhost:8000">
+        <label for="authToken" style="margin-top:10px;">Access Token (JWT)</label>
+        <input id="authToken" placeholder="paste bearer token">
+      </article>
     </section>
 
-    <section class="grid">
+    <section class="layout">
       <article class="panel">
-        <span class="tag">Input</span>
+        <div class="panel-header">
+          <div>
+            <h2 class="panel-title">Input Pipeline</h2>
+            <p class="panel-meta">Define candidate source and target job posting.</p>
+          </div>
+        </div>
+
         <div class="stack">
-          <div class="row">
-            <div>
-              <label for="resumeId">Resume ID (optional)</label>
-              <input id="resumeId" placeholder="uuid-or-custom" />
+          <div class="group">
+            <p class="group-title">IDs (optional)</p>
+            <div class="row">
+              <div>
+                <label for="resumeId">Resume ID</label>
+                <input id="resumeId" placeholder="uuid-or-custom">
+              </div>
+              <div>
+                <label for="jobId">Job ID</label>
+                <input id="jobId" placeholder="uuid-or-custom">
+              </div>
             </div>
-            <div>
-              <label for="jobId">Job ID (optional)</label>
-              <input id="jobId" placeholder="uuid-or-custom" />
+          </div>
+
+          <div class="group">
+            <p class="group-title">Resume</p>
+            <label for="resumeFile">Resume File (.pdf, .docx, .txt)</label>
+            <input id="resumeFile" type="file" accept=".pdf,.docx,.txt">
+          </div>
+
+          <div class="group">
+            <p class="group-title">Job</p>
+            <label for="jobUrl">Job URL</label>
+            <input id="jobUrl" type="url" placeholder="https://company.com/careers/job-123">
+          </div>
+
+          <div class="group">
+            <p class="group-title">Actions</p>
+            <div class="actions">
+              <button class="btn-primary" id="computeBtn">Compute Fit</button>
+              <button class="btn-secondary" id="sampleBtn">Load Sample URL</button>
+              <label style="margin:0;">
+                <input type="checkbox" id="useMl" checked> Use ML model when available
+              </label>
             </div>
           </div>
 
-          <div>
-            <label for="resumeText">Resume Text</label>
-            <textarea id="resumeText" placeholder="Paste resume content here"></textarea>
-          </div>
-
-          <div>
-            <label for="jobText">Job Description Text</label>
-            <textarea id="jobText" placeholder="Paste job description here"></textarea>
-          </div>
-
-          <div class="actions">
-            <button class="btn-primary" id="computeBtn">Compute Fit</button>
-            <button class="btn-secondary" id="sampleBtn">Load Sample</button>
-            <label>
-              <input type="checkbox" id="useMl" checked />
-              Use ML model when available
-            </label>
-          </div>
-          <p class="status" id="statusLine">Ready.</p>
+          <div class="status-box" id="statusLine">Ready.</div>
         </div>
       </article>
 
       <article class="panel">
-        <span class="tag">Output</span>
-        <div id="emptyState" class="status">Run a score to see fit index, model output, ATS diagnostics, and recommendation traces.</div>
-        <div id="resultView" style="display:none">
-          <div id="fitBadge" class="pill warn">Awaiting score</div>
-          <div class="metric-grid">
-            <div class="metric">
-              <p class="k">Fit Index</p>
-              <p class="v" id="fitIndex">-</p>
+        <div class="panel-header">
+          <div>
+            <h2 class="panel-title">Scoring Dashboard</h2>
+            <p class="panel-meta">Inspect fit components, ATS signals, and recommendations.</p>
+          </div>
+        </div>
+
+        <div id="emptyState" class="empty">Run a score to render analysis output.</div>
+
+        <div id="resultView" style="display:none;">
+          <div class="result-stack">
+            <div class="group">
+              <div id="fitBadge" class="badge warn">Awaiting score</div>
+              <div class="metrics">
+                <div class="metric">
+                  <p class="k">Fit Index</p>
+                  <p class="v" id="fitIndex">-</p>
+                </div>
+                <div class="metric">
+                  <p class="k">ML Probability</p>
+                  <p class="v" id="mlProb">-</p>
+                </div>
+                <div class="metric">
+                  <p class="k">Model</p>
+                  <p class="v" id="modelStatus">-</p>
+                </div>
+                <div class="metric">
+                  <p class="k">Semantic</p>
+                  <p class="v" id="semanticScore">-</p>
+                </div>
+                <div class="metric">
+                  <p class="k">Keyword</p>
+                  <p class="v" id="keywordCoverage">-</p>
+                </div>
+                <div class="metric">
+                  <p class="k">ATS Risk</p>
+                  <p class="v" id="atsRisk">-</p>
+                </div>
+              </div>
             </div>
-            <div class="metric">
-              <p class="k">ML Fit Probability</p>
-              <p class="v" id="mlProb">-</p>
+
+            <div class="group">
+              <p class="group-title">Top Missing Keywords</p>
+              <div class="chips" id="missingKeywords"></div>
             </div>
-            <div class="metric">
-              <p class="k">Semantic</p>
-              <p class="v" id="semanticScore">-</p>
+
+            <div class="group">
+              <p class="group-title">Top Matched Keywords</p>
+              <div class="chips" id="matchedKeywords"></div>
             </div>
-            <div class="metric">
-              <p class="k">Keyword Coverage</p>
-              <p class="v" id="keywordCoverage">-</p>
+
+            <div class="group">
+              <p class="group-title">Recommendations</p>
+              <ul class="list" id="recommendations"></ul>
             </div>
-            <div class="metric">
-              <p class="k">ATS Risk</p>
-              <p class="v" id="atsRisk">-</p>
-            </div>
-            <div class="metric">
-              <p class="k">Model Status</p>
-              <p class="v" id="modelStatus">-</p>
+
+            <div class="group">
+              <p class="group-title">Raw Explanation JSON</p>
+              <pre id="rawJson"></pre>
             </div>
           </div>
-
-          <label>Top Missing Keywords</label>
-          <div class="chips" id="missingKeywords"></div>
-
-          <label style="margin-top:10px; display:block;">Top Matched Keywords</label>
-          <div class="chips" id="matchedKeywords"></div>
-
-          <label style="margin-top:10px; display:block;">Recommendations</label>
-          <ul class="list" id="recommendations"></ul>
-
-          <label style="margin-top:10px; display:block;">Raw Explanation JSON</label>
-          <pre id="rawJson"></pre>
         </div>
       </article>
     </section>
@@ -407,10 +658,11 @@
   <script>
     const els = {
       apiBase: document.getElementById("apiBase"),
+      authToken: document.getElementById("authToken"),
       resumeId: document.getElementById("resumeId"),
       jobId: document.getElementById("jobId"),
-      resumeText: document.getElementById("resumeText"),
-      jobText: document.getElementById("jobText"),
+      resumeFile: document.getElementById("resumeFile"),
+      jobUrl: document.getElementById("jobUrl"),
       useMl: document.getElementById("useMl"),
       computeBtn: document.getElementById("computeBtn"),
       sampleBtn: document.getElementById("sampleBtn"),
@@ -437,6 +689,14 @@
       return (Number(value) * 100).toFixed(1) + "%";
     }
 
+    function authHeaders() {
+      const token = (els.authToken.value || "").trim();
+      if (!token) {
+        return {};
+      }
+      return { Authorization: "Bearer " + token };
+    }
+
     function formatScore(value) {
       if (value === null || value === undefined || Number.isNaN(value)) {
         return "-";
@@ -445,7 +705,7 @@
     }
 
     function setBadge(fitIndex) {
-      els.fitBadge.className = "pill";
+      els.fitBadge.className = "badge";
       if (fitIndex >= 75) {
         els.fitBadge.classList.add("good");
         els.fitBadge.textContent = "Strong fit";
@@ -492,30 +752,28 @@
     }
 
     async function computeFit() {
-      const resumeText = els.resumeText.value.trim();
-      const jobText = els.jobText.value.trim();
-      if (!resumeText || !jobText) {
-        els.statusLine.textContent = "Resume text and job text are required.";
+      const file = els.resumeFile.files && els.resumeFile.files[0];
+      const jobUrl = els.jobUrl.value.trim();
+      if (!file || !jobUrl) {
+        els.statusLine.textContent = "Resume file and job URL are required.";
         return;
       }
-
-      const payload = {
-        resume_text: resumeText,
-        job_text: jobText,
-        resume_id: els.resumeId.value.trim() || null,
-        job_id: els.jobId.value.trim() || null,
-        use_ml_model: els.useMl.checked
-      };
+      const formData = new FormData();
+      formData.append("resume_file", file);
+      formData.append("job_url", jobUrl);
+      formData.append("resume_id", els.resumeId.value.trim());
+      formData.append("job_id", els.jobId.value.trim());
+      formData.append("use_ml_model", String(els.useMl.checked));
 
       els.computeBtn.disabled = true;
       els.statusLine.textContent = "Computing...";
 
       try {
         const base = els.apiBase.value.replace(/\/$/, "");
-        const response = await fetch(base + "/api/v1/matches/compute", {
+        const response = await fetch(base + "/api/v1/matches/compute-from-file-url", {
           method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(payload)
+          headers: authHeaders(),
+          body: formData
         });
         if (!response.ok) {
           const errText = await response.text();
@@ -546,15 +804,14 @@
     }
 
     function loadSample() {
-      els.resumeText.value =
-        "Backend engineer with 5 years experience building APIs in Python and FastAPI. " +
-        "Worked with PostgreSQL, Docker, AWS, CI/CD, and microservices. " +
-        "Education: BS Computer Science.";
-      els.jobText.value =
-        "We are hiring a backend engineer. Required skills: Python, FastAPI, SQL, PostgreSQL, " +
-        "cloud infrastructure, Docker, REST API design, CI/CD. Education preferred in CS.";
-      els.statusLine.textContent = "Sample loaded.";
+      els.jobUrl.value = "https://boards.greenhouse.io";
+      els.statusLine.textContent = "Sample URL loaded. Select a resume file to compute.";
     }
+
+    els.authToken.value = localStorage.getItem("careerops_auth_token") || "";
+    els.authToken.addEventListener("input", () => {
+      localStorage.setItem("careerops_auth_token", els.authToken.value.trim());
+    });
 
     els.computeBtn.addEventListener("click", computeFit);
     els.sampleBtn.addEventListener("click", loadSample);

@@ -1,0 +1,260 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CareerOps History</title>
+  <style>
+    :root {
+      --bg: #060b14;
+      --panel: rgba(10, 18, 36, 0.74);
+      --border: rgba(145, 171, 224, 0.24);
+      --text: #e6efff;
+      --muted: #9eb3dc;
+      --accent: #00d1ff;
+      --radius: 14px;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: "Sora", "Segoe UI", sans-serif;
+      color: var(--text);
+      background:
+        radial-gradient(32rem 20rem at 8% 14%, rgba(0, 209, 255, 0.15), transparent 68%),
+        radial-gradient(30rem 18rem at 92% 10%, rgba(109, 125, 255, 0.16), transparent 70%),
+        var(--bg);
+    }
+    .shell {
+      width: min(1180px, 94vw);
+      margin: 24px auto 28px;
+    }
+    .top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 14px;
+    }
+    .title {
+      margin: 0;
+      font-size: 1.5rem;
+      letter-spacing: -0.02em;
+    }
+    .sub {
+      margin: 4px 0 0;
+      color: var(--muted);
+      font-size: 0.9rem;
+    }
+    .top a {
+      color: #d4e4ff;
+      text-decoration: none;
+      border: 1px solid var(--border);
+      padding: 8px 12px;
+      border-radius: 999px;
+      font-size: 0.82rem;
+    }
+    .controls {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 12px;
+    }
+    input, button {
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      background: rgba(10, 19, 39, 0.88);
+      color: var(--text);
+      padding: 10px 12px;
+      font: inherit;
+    }
+    button {
+      cursor: pointer;
+      background: linear-gradient(130deg, #00d1ff, #6d7dff);
+      color: #031122;
+      border: 0;
+      font-weight: 700;
+    }
+    .status {
+      margin: 0 0 12px;
+      color: var(--muted);
+      font-size: 0.9rem;
+    }
+    .cards {
+      display: grid;
+      gap: 10px;
+    }
+    .card {
+      border: 1px solid var(--border);
+      background: var(--panel);
+      border-radius: var(--radius);
+      padding: 12px;
+    }
+    .row {
+      display: flex;
+      justify-content: space-between;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-bottom: 6px;
+    }
+    .k {
+      color: #9bb0d7;
+      font-size: 0.78rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      margin: 0 0 4px;
+    }
+    .v {
+      margin: 0;
+      font-size: 0.92rem;
+      color: #deebff;
+      word-break: break-word;
+    }
+    .metrics {
+      display: grid;
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+      gap: 8px;
+      margin-top: 8px;
+    }
+    .metric {
+      border: 1px solid rgba(145, 171, 224, 0.2);
+      border-radius: 10px;
+      padding: 8px;
+      background: rgba(8, 16, 30, 0.7);
+    }
+    .mono {
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      font-size: 0.8rem;
+    }
+    .empty {
+      border: 1px dashed var(--border);
+      border-radius: var(--radius);
+      padding: 20px;
+      color: var(--muted);
+    }
+    @media (max-width: 900px) {
+      .metrics { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    }
+    @media (max-width: 560px) {
+      .controls { flex-direction: column; }
+      .metrics { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <main class="shell">
+    <section class="top">
+      <div>
+        <h1 class="title">Request History</h1>
+        <p class="sub">All saved scoring runs: job link, uploaded resume snapshot, suggestions, and request time.</p>
+      </div>
+      <a href="/index.html">Back to Studio</a>
+    </section>
+
+    <section class="controls">
+      <input id="apiBase" value="http://localhost:8000" aria-label="API Base URL">
+      <input id="authToken" placeholder="Bearer token" aria-label="Bearer token">
+      <input id="limit" value="50" aria-label="Limit">
+      <button id="refreshBtn">Refresh</button>
+    </section>
+
+    <p class="status" id="statusLine">Loading...</p>
+    <section class="cards" id="cards"></section>
+  </main>
+
+  <script>
+    const apiBase = document.getElementById("apiBase");
+    const authToken = document.getElementById("authToken");
+    const limitInput = document.getElementById("limit");
+    const refreshBtn = document.getElementById("refreshBtn");
+    const statusLine = document.getElementById("statusLine");
+    const cards = document.getElementById("cards");
+
+    function fmt(v, digits = 2) {
+      if (v === null || v === undefined || Number.isNaN(v)) return "-";
+      return Number(v).toFixed(digits);
+    }
+
+    function pct(v) {
+      if (v === null || v === undefined || Number.isNaN(v)) return "-";
+      return (Number(v) * 100).toFixed(1) + "%";
+    }
+
+    function render(rows) {
+      cards.innerHTML = "";
+      if (!rows || !rows.length) {
+        cards.innerHTML = "<div class='empty'>No history records found.</div>";
+        return;
+      }
+      rows.forEach((row) => {
+        const div = document.createElement("article");
+        div.className = "card";
+        const changes = row.suggested_changes_json || {};
+        const recs = (changes.recommendations || []).map((r) => r.message || r.type || "Recommendation");
+        div.innerHTML = `
+          <div class="row">
+            <div>
+              <p class="k">Requested At</p>
+              <p class="v">${row.requested_at || "-"}</p>
+            </div>
+            <div>
+              <p class="k">Resume File</p>
+              <p class="v">${row.resume_filename || "-"}</p>
+            </div>
+          </div>
+          <div>
+            <p class="k">Job URL</p>
+            <p class="v"><a class="v" href="${row.job_url}" target="_blank" rel="noreferrer">${row.job_url}</a></p>
+          </div>
+          <div class="metrics">
+            <div class="metric"><p class="k">Fit</p><p class="v">${fmt(row.fit_index)}</p></div>
+            <div class="metric"><p class="k">Semantic</p><p class="v">${pct(row.semantic_score)}</p></div>
+            <div class="metric"><p class="k">Keyword</p><p class="v">${pct(row.keyword_coverage)}</p></div>
+            <div class="metric"><p class="k">ATS Risk</p><p class="v">${pct(row.ats_risk_score)}</p></div>
+            <div class="metric"><p class="k">ML Prob</p><p class="v">${pct(row.ml_fit_probability)}</p></div>
+          </div>
+          <div style="margin-top:8px;">
+            <p class="k">Suggested Resume Draft</p>
+            <p class="v mono">${(row.suggested_resume_text || "-").slice(0, 450)}</p>
+          </div>
+          <div style="margin-top:8px;">
+            <p class="k">Suggested Changes</p>
+            <p class="v">${recs.length ? recs.join(" | ") : "-"}</p>
+          </div>
+        `;
+        cards.appendChild(div);
+      });
+    }
+
+    async function loadHistory() {
+      const base = apiBase.value.replace(/\/$/, "");
+      const limit = Math.max(1, Math.min(200, Number(limitInput.value) || 50));
+      statusLine.textContent = "Loading...";
+      try {
+        const res = await fetch(`${base}/api/v1/matches/history/list?limit=${limit}&offset=0`, {
+          headers: authHeaders()
+        });
+        if (!res.ok) {
+          const txt = await res.text();
+          throw new Error(`Request failed: ${res.status} ${txt}`);
+        }
+        const data = await res.json();
+        render(data.history || []);
+        statusLine.textContent = `Loaded ${data.count || 0} records.`;
+      } catch (err) {
+        statusLine.textContent = "Error: " + err.message;
+      }
+    }
+
+    refreshBtn.addEventListener("click", loadHistory);
+    authToken.value = localStorage.getItem("careerops_auth_token") || "";
+    authToken.addEventListener("input", () => {
+      localStorage.setItem("careerops_auth_token", authToken.value.trim());
+    });
+    loadHistory();
+  </script>
+</body>
+</html>
+    function authHeaders() {
+      const token = (authToken.value || "").trim();
+      if (!token) return {};
+      return { Authorization: "Bearer " + token };
+    }
