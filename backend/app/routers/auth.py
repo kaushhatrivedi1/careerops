@@ -26,7 +26,7 @@ class Token(BaseModel):
 
 class UserCreate(BaseModel):
     email: EmailStr
-    full_name: str
+    full_name: Optional[str] = None
     password: str
 
 

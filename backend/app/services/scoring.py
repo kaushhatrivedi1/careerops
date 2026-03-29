@@ -1,31 +1,58 @@
 """
-Deterministic fit scoring used by MVP matching endpoints.
+Fit scoring: semantic similarity via sentence-transformers + keyword/ATS signals.
 """
 from __future__ import annotations
 
 import re
 from dataclasses import dataclass
+from functools import lru_cache
 from typing import Any
 
+import numpy as np
 
-TOKEN_PATTERN = re.compile(r"[a-zA-Z][a-zA-Z0-9\+\#\.\-]{1,}")
+
+TOKEN_PATTERN = re.compile(r"[a-zA-Z][a-zA-Z0-9\+\#\.\-]+")
+
+# Common English words that are not skills or meaningful job keywords
 STOPWORDS = {
-    "and",
-    "the",
-    "for",
-    "with",
-    "from",
-    "that",
-    "this",
-    "your",
-    "you",
-    "our",
-    "are",
-    "will",
-    "have",
-    "years",
-    "year",
-    "experience",
+    # articles / conjunctions / prepositions
+    "and", "the", "for", "with", "from", "that", "this", "into",
+    "over", "under", "about", "above", "after", "before", "between",
+    "through", "during", "without", "within", "along", "following",
+    "across", "behind", "beyond", "plus", "except", "but", "nor",
+    "yet", "both", "either", "neither", "each", "few", "more",
+    "most", "other", "some", "such", "than", "too", "very",
+    # pronouns / determiners
+    "you", "your", "our", "their", "they", "them", "its", "his",
+    "her", "who", "what", "which", "where", "when", "how", "all",
+    "any", "every", "these", "those", "then", "there", "here",
+    # common verbs
+    "are", "was", "were", "has", "have", "had", "will", "would",
+    "could", "should", "may", "might", "shall", "can", "must",
+    "being", "been", "does", "did", "doing", "get", "got", "gets",
+    "make", "made", "makes", "take", "taken", "takes", "come",
+    "goes", "went", "gone", "give", "given", "gives", "use", "used",
+    "using", "uses", "apply", "applied", "applies", "ensure", "need",
+    "needs", "help", "helps", "want", "include", "includes", "work",
+    "works", "worked", "provide", "provides", "support", "supports",
+    "create", "build", "drive", "define", "maintain", "manage",
+    # common adjectives / adverbs
+    "new", "also", "just", "only", "back", "away", "best", "good",
+    "great", "high", "large", "long", "low", "next", "old", "own",
+    "same", "small", "well", "able", "always", "never", "often",
+    "real", "right", "still", "true", "full", "strong", "fast",
+    # job-posting filler words
+    "we", "not", "are", "role", "team", "join", "based", "across",
+    "awards", "look", "looking", "job", "jobs", "hire", "hiring",
+    "position", "opportunity", "opportunities", "candidate",
+    "candidates", "company", "business", "people", "person",
+    "please", "send", "email", "apply", "application", "submit",
+    "resume", "cover", "letter", "requirements", "qualifications",
+    "preferred", "required", "must", "plus", "bonus",
+    # time / quantity words
+    "year", "years", "month", "months", "day", "days", "time",
+    "times", "many", "much", "number", "lot", "lots", "part",
+    "way", "ways", "type", "types", "level", "levels", "range",
 }
 
 REQUIRED_SECTION_HINTS = ("experience", "skills", "education")
@@ -42,9 +69,29 @@ class ScoreResult:
     top_matched_keywords: list[str]
 
 
+@lru_cache(maxsize=1)
+def _get_embedding_model():
+    from sentence_transformers import SentenceTransformer
+    from app.core.config import settings
+    return SentenceTransformer(settings.EMBEDDING_MODEL_NAME)
+
+
+def _embedding_cosine_similarity(text_a: str, text_b: str) -> float:
+    """Encode both texts and return cosine similarity in [0, 1]."""
+    model = _get_embedding_model()
+    emb_a, emb_b = model.encode(
+        [text_a or "", text_b or ""],
+        normalize_embeddings=True,
+        show_progress_bar=False,
+    )
+    # Dot product of L2-normalised vectors == cosine similarity
+    score = float(np.dot(emb_a, emb_b))
+    return max(0.0, min(score, 1.0))
+
+
 def _normalize_tokens(text: str) -> list[str]:
     tokens = [t.lower() for t in TOKEN_PATTERN.findall(text or "")]
-    return [t for t in tokens if t not in STOPWORDS and len(t) > 2]
+    return [t for t in tokens if t not in STOPWORDS and len(t) > 3]
 
 
 def _extract_keywords(text: str, limit: int = 60) -> list[str]:
@@ -55,17 +102,11 @@ def _extract_keywords(text: str, limit: int = 60) -> list[str]:
     return [token for token, _ in sorted_tokens[:limit]]
 
 
-def _jaccard_similarity(tokens_a: set[str], tokens_b: set[str]) -> float:
-    if not tokens_a or not tokens_b:
-        return 0.0
-    inter = tokens_a.intersection(tokens_b)
-    union = tokens_a.union(tokens_b)
-    if not union:
-        return 0.0
-    return len(inter) / len(union)
-
-
-def _ats_risk(resume_text: str, job_keywords: set[str], matched_keywords: set[str]) -> tuple[float, dict[str, Any]]:
+def _ats_risk(
+    resume_text: str,
+    job_keywords: set[str],
+    matched_keywords: set[str],
+) -> tuple[float, dict[str, Any]]:
     lowered = (resume_text or "").lower()
     penalties: list[str] = []
     risk = 0.0
@@ -88,13 +129,14 @@ def _ats_risk(resume_text: str, job_keywords: set[str], matched_keywords: set[st
             penalties.append("Low required-skill coverage")
 
     risk = min(max(risk, 0.0), 1.0)
-    return risk, {
-        "keyword_density": round(density, 4),
-        "penalties": penalties,
-    }
+    return risk, {"keyword_density": round(density, 4), "penalties": penalties}
 
 
 def compute_fit_score(resume_text: str, job_text: str) -> ScoreResult:
+    # Semantic similarity via sentence embeddings (replaces Jaccard)
+    semantic_score = _embedding_cosine_similarity(resume_text, job_text)
+
+    # Keyword signals (kept as complementary signal)
     resume_tokens = set(_normalize_tokens(resume_text))
     job_keywords_list = _extract_keywords(job_text)
     job_keywords = set(job_keywords_list)
@@ -102,7 +144,6 @@ def compute_fit_score(resume_text: str, job_text: str) -> ScoreResult:
     matched_keywords = resume_tokens.intersection(job_keywords)
     missing_keywords = job_keywords.difference(resume_tokens)
 
-    semantic_score = _jaccard_similarity(resume_tokens, job_keywords)
     keyword_coverage = (len(matched_keywords) / len(job_keywords)) if job_keywords else 0.0
     ats_risk_score, ats_details = _ats_risk(resume_text, job_keywords, matched_keywords)
 
@@ -115,7 +156,7 @@ def compute_fit_score(resume_text: str, job_text: str) -> ScoreResult:
     top_missing = sorted(missing_keywords)[:10]
     top_matched = sorted(matched_keywords)[:10]
     explanation = {
-        "formula_version": "v1_deterministic",
+        "formula_version": "v2_embedding",
         "components": {
             "semantic_score": round(semantic_score, 4),
             "keyword_coverage": round(keyword_coverage, 4),
@@ -147,9 +188,7 @@ def compute_fit_score(resume_text: str, job_text: str) -> ScoreResult:
 
 
 def build_suggested_resume_draft(resume_text: str, missing_keywords: list[str]) -> str:
-    """
-    Build a lightweight resume draft suggestion from computed gaps.
-    """
+    """Build a lightweight resume draft suggestion from computed gaps."""
     base = (resume_text or "").strip()
     if not missing_keywords:
         return base
