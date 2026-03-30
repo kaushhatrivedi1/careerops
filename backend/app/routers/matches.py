@@ -141,15 +141,6 @@ async def compute_match_from_file_url(
     except Exception as exc:
         raise HTTPException(status_code=502, detail=f"Input processing failed: {type(exc).__name__}")
 
-    import base64
-    fname = (resume_file.filename or "").lower()
-    if fname.endswith(".pdf"):
-        resume_mime = "application/pdf"
-    elif fname.endswith(".docx"):
-        resume_mime = "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
-    else:
-        resume_mime = "text/plain"
-    resume_file_b64 = base64.b64encode(resume_bytes).decode("utf-8")
 
     result = compute_fit_score(resume_text, job_text)
     ml_probability = None
@@ -238,8 +229,6 @@ async def compute_match_from_file_url(
         "top_missing_keywords": result.top_missing_keywords,
         "top_matched_keywords": result.top_matched_keywords,
         "resume_text": resume_text,
-        "resume_file_b64": resume_file_b64,
-        "resume_mime": resume_mime,
         "suggested_resume_text": suggested_resume_text,
         "explanation_json": result.explanation,
     }

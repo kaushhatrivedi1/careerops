@@ -70,21 +70,45 @@ def _is_new_block(line: str) -> bool:
     )
 
 
+def _is_fragment(line: str) -> bool:
+    """Short word-sequence that is likely a PDF column layout artefact, not a standalone block."""
+    if not line or _is_new_block(line):
+        return False
+    words = line.split()
+    return len(words) <= 3 and not line.endswith(".")
+
+
 def _normalize_pdf(raw: str) -> str:
     """
-    Clean PDF-extracted text:
-    1. Collapse multiple spaces (PDF char spacing artefact) → single space
-    2. Strip each line
-    3. Rejoin lines that were broken mid-sentence by PDF column layout:
-       a continuation line starts lowercase or with a comma/parenthesis
-       and the previous line does NOT end a sentence.
-    """
-    # Collapse runs of spaces/nbsp
-    raw = re.sub(r"[ \t]{2,}", " ", raw)
+    Clean PDF-extracted text that comes out word-per-line due to column layout.
 
+    Steps:
+    1. Collapse multiple spaces → single space.
+    2. Strip each line.
+    3. Remove blank lines that are sandwiched between short fragments
+       (e.g. "APIs,\\n\\nand\\n\\ndatabases" → "APIs, and databases").
+    4. Merge short-fragment continuation lines and lowercase-starting lines
+       into the previous line, unless the previous line ends a sentence.
+    5. Collapse consecutive blank lines.
+    """
+    raw = re.sub(r"[ \t]{2,}", " ", raw)
     lines = [line.strip() for line in raw.splitlines()]
+
+    # Pass 1 — remove blank lines between fragments so the merge pass can see them as adjacent
+    deblocked: list[str] = []
+    n = len(lines)
+    for i, line in enumerate(lines):
+        if line == "":
+            prev = lines[i - 1].strip() if i > 0 else ""
+            nxt  = lines[i + 1].strip() if i + 1 < n else ""
+            # Skip blank if either neighbour is a short fragment
+            if _is_fragment(prev) or _is_fragment(nxt):
+                continue
+        deblocked.append(line)
+
+    # Pass 2 — merge continuation lines
     merged: list[str] = []
-    for line in lines:
+    for line in deblocked:
         if not line:
             merged.append("")
             continue
@@ -93,13 +117,13 @@ def _normalize_pdf(raw: str) -> str:
             and merged[-1]
             and not _is_new_block(line)
             and not merged[-1].endswith((".", ":", "–", "—", "|"))
-            and (line[0].islower() or line[0] in ",;)")
+            and (line[0].islower() or line[0] in ",;)(" or _is_fragment(line))
         ):
             merged[-1] = merged[-1] + " " + line
         else:
             merged.append(line)
 
-    # Remove consecutive blank lines
+    # Pass 3 — collapse consecutive blank lines
     result: list[str] = []
     prev_blank = False
     for line in merged:
