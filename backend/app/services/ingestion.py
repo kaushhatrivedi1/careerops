@@ -12,19 +12,31 @@ from docx import Document
 from pypdf import PdfReader
 
 
+_HEADING_TAGS = {"h1", "h2", "h3", "h4", "h5", "h6", "strong", "b", "li"}
+_BLOCK_TAGS = {"p", "div", "section", "article", "header", "footer", "ul", "ol", "br", "tr", "td"}
+
+
 class _VisibleTextParser(HTMLParser):
     def __init__(self) -> None:
         super().__init__()
         self._skip_depth = 0
         self._chunks: list[str] = []
+        self._pending_newline = False
 
     def handle_starttag(self, tag: str, attrs) -> None:  # type: ignore[override]
         if tag in {"script", "style", "noscript"}:
             self._skip_depth += 1
+        elif tag in _HEADING_TAGS:
+            # Add double newline before headings so section detection works
+            self._chunks.append("\n\n")
+        elif tag in _BLOCK_TAGS:
+            self._chunks.append("\n")
 
     def handle_endtag(self, tag: str) -> None:  # type: ignore[override]
         if tag in {"script", "style", "noscript"} and self._skip_depth > 0:
             self._skip_depth -= 1
+        elif tag in _HEADING_TAGS:
+            self._chunks.append("\n")
 
     def handle_data(self, data: str) -> None:  # type: ignore[override]
         if self._skip_depth == 0:
@@ -33,7 +45,7 @@ class _VisibleTextParser(HTMLParser):
                 self._chunks.append(cleaned)
 
     def text(self) -> str:
-        return "\n".join(self._chunks)
+        return "".join(self._chunks)
 
 
 def _normalize_text(raw: str) -> str:
