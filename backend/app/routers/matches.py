@@ -279,6 +279,7 @@ async def list_match_request_history(
               id,
               job_url,
               resume_filename,
+              resume_text_used,
               fit_index,
               semantic_score,
               keyword_coverage,
