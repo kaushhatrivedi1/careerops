@@ -3,818 +3,985 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>CareerOps Fit Studio</title>
+  <title>CareerOps — Fit Studio</title>
   <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+
     :root {
-      --bg: #070b14;
-      --bg-soft: #0e1730;
-      --panel: rgba(12, 20, 40, 0.62);
-      --panel-border: rgba(142, 165, 219, 0.24);
-      --text: #e8f0ff;
-      --muted: #9fb3d9;
-      --accent: #00d1ff;
-      --accent-2: #6d7dff;
-      --ok: #53e3a6;
-      --warn: #ffcb5e;
-      --bad: #ff7f9b;
-      --shadow: 0 22px 50px rgba(2, 6, 18, 0.45);
-      --radius-lg: 20px;
-      --radius-md: 14px;
-      --radius-sm: 10px;
+      --bg:       #0c1220;
+      --surface:  #131c2e;
+      --panel:    #182030;
+      --raised:   #1e2a3f;
+      --border:   rgba(99,140,220,0.16);
+      --border-active: rgba(56,189,248,0.45);
+      --text:     #ddeeff;
+      --muted:    #7a9cc0;
+      --dim:      #4a6a90;
+      --accent:   #38bdf8;
+      --accent2:  #818cf8;
+      --ok:       #34d399;
+      --warn:     #fbbf24;
+      --bad:      #f87171;
+      --r:        12px;
+      --r-sm:     8px;
+      --shadow:   0 4px 24px rgba(0,0,0,0.4);
     }
 
-    * {
-      box-sizing: border-box;
-    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
     body {
-      margin: 0;
+      font-family: "Inter", "Segoe UI", system-ui, sans-serif;
+      font-size: 14px;
+      line-height: 1.5;
+      background: var(--bg);
       color: var(--text);
       min-height: 100vh;
-      font-family: "Sora", "Space Grotesk", "Segoe UI", sans-serif;
-      background: var(--bg);
-      overflow-x: hidden;
+      -webkit-font-smoothing: antialiased;
     }
 
-    .fx-bg {
-      position: fixed;
-      inset: 0;
-      z-index: -2;
+    /* ── Gradient header glow ── */
+    body::before {
+      content: "";
+      position: fixed; top: 0; left: 0; right: 0; height: 400px;
       background:
-        radial-gradient(42rem 22rem at 6% 12%, rgba(0, 209, 255, 0.18), transparent 65%),
-        radial-gradient(34rem 20rem at 86% 18%, rgba(109, 125, 255, 0.2), transparent 70%),
-        radial-gradient(38rem 24rem at 50% 88%, rgba(123, 97, 255, 0.16), transparent 72%),
-        linear-gradient(150deg, #05080f, #091125 55%, #060b16);
-      background-size: 130% 130%;
-      animation: bgDrift 18s ease-in-out infinite alternate;
+        radial-gradient(ellipse 70% 50% at 30% -5%, rgba(56,189,248,.12) 0%, transparent 60%),
+        radial-gradient(ellipse 50% 40% at 80% 0%, rgba(129,140,248,.1) 0%, transparent 65%);
+      pointer-events: none; z-index: 0;
     }
 
-    .grid-noise {
-      position: fixed;
-      inset: 0;
-      z-index: -1;
-      pointer-events: none;
-      opacity: 0.26;
-      background-image:
-        linear-gradient(rgba(127, 158, 255, 0.09) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(127, 158, 255, 0.09) 1px, transparent 1px);
-      background-size: 44px 44px;
-      mask-image: radial-gradient(circle at 50% 40%, black 35%, transparent 88%);
-    }
+    /* ── Layout ── */
+    .app { display: flex; flex-direction: column; min-height: 100vh; position: relative; z-index: 1; }
+    .shell { width: min(1280px, 96vw); margin: 0 auto; padding: 20px 0 60px; }
 
-    .aurora {
-      position: fixed;
-      width: 38vw;
-      height: 38vw;
-      filter: blur(26px);
-      opacity: 0.28;
-      border-radius: 999px;
-      pointer-events: none;
-      animation: float 14s ease-in-out infinite alternate;
-      z-index: -1;
+    /* ── Nav ── */
+    nav {
+      background: rgba(19,28,46,0.85);
+      border-bottom: 1px solid var(--border);
+      backdrop-filter: blur(12px);
+      position: sticky; top: 0; z-index: 50;
     }
-
-    .aurora.a {
-      top: -8vw;
-      left: -8vw;
-      background: #00d1ff;
+    .nav-inner {
+      width: min(1280px,96vw); margin: 0 auto;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0 0; height: 52px;
     }
-
-    .aurora.b {
-      bottom: -10vw;
-      right: -10vw;
-      background: #6d7dff;
-      animation-delay: 1.2s;
-      animation-duration: 16s;
-    }
-
-    @keyframes bgDrift {
-      from {
-        background-position: 0% 0%;
-      }
-      to {
-        background-position: 8% 12%;
-      }
-    }
-
-    @keyframes float {
-      from {
-        transform: translateY(0px) scale(1);
-      }
-      to {
-        transform: translateY(26px) scale(1.08);
-      }
-    }
-
-    .sweep {
-      position: fixed;
-      inset: -20% -30%;
-      z-index: -1;
-      pointer-events: none;
-      background: linear-gradient(
-        110deg,
-        transparent 35%,
-        rgba(0, 209, 255, 0.06) 48%,
-        rgba(109, 125, 255, 0.08) 52%,
-        transparent 65%
-      );
-      animation: sweep 9s linear infinite;
-    }
-
-    @keyframes sweep {
-      from {
-        transform: translateX(-12%) translateY(-4%) rotate(0.2deg);
-      }
-      to {
-        transform: translateX(12%) translateY(4%) rotate(-0.2deg);
-      }
-    }
-
-    .shell {
-      width: min(1240px, 94vw);
-      margin: 28px auto 34px;
-    }
-
-    .masthead {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 14px 16px;
-      border: 1px solid var(--panel-border);
-      border-radius: var(--radius-md);
-      background: linear-gradient(140deg, rgba(12, 20, 40, 0.7), rgba(13, 28, 60, 0.45));
-      box-shadow: var(--shadow);
-      backdrop-filter: blur(8px);
-    }
-
     .brand {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      font-weight: 700;
-      letter-spacing: 0.03em;
-      text-transform: uppercase;
-      font-size: 0.86rem;
-      color: #b8d7ff;
+      display: flex; align-items: center; gap: 8px;
+      font-weight: 800; font-size: .82rem; letter-spacing: .1em; text-transform: uppercase;
+      color: var(--text); text-decoration: none;
     }
-
-    .dot {
-      width: 10px;
-      height: 10px;
-      border-radius: 999px;
-      background: linear-gradient(135deg, var(--accent), var(--accent-2));
-      box-shadow: 0 0 18px rgba(0, 209, 255, 0.8);
+    .brand-icon {
+      width: 28px; height: 28px; border-radius: 7px;
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      display: flex; align-items: center; justify-content: center;
+      font-size: .75rem; font-weight: 900; color: #050d1a;
     }
-
-    .stamp {
-      color: var(--muted);
-      font-size: 0.82rem;
-      display: flex;
-      align-items: center;
-      gap: 12px;
+    .nav-center { display: flex; gap: 4px; }
+    .nav-link {
+      color: var(--muted); text-decoration: none; font-size: .83rem; font-weight: 500;
+      padding: 6px 12px; border-radius: var(--r-sm); border: 1px solid transparent;
+      transition: all .15s;
     }
+    .nav-link:hover { color: var(--text); background: var(--raised); }
+    .nav-link.active { color: var(--accent); background: rgba(56,189,248,.08); border-color: rgba(56,189,248,.25); }
+    .nav-right { display: flex; gap: 8px; align-items: center; }
 
-    .stamp a {
-      color: #b9d3ff;
-      text-decoration: none;
-      border: 1px solid rgba(142, 165, 219, 0.3);
-      padding: 5px 10px;
-      border-radius: 999px;
-      font-size: 0.76rem;
+    /* ── Buttons ── */
+    button, .btn {
+      display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+      border: none; border-radius: var(--r-sm); padding: 8px 16px;
+      font-family: inherit; font-size: .83rem; font-weight: 600; cursor: pointer;
+      transition: all .15s; white-space: nowrap; text-decoration: none;
     }
+    button:hover:not(:disabled), .btn:hover { filter: brightness(1.08); transform: translateY(-1px); }
+    button:active:not(:disabled), .btn:active { transform: translateY(0); }
+    button:disabled { opacity: .45; cursor: not-allowed; transform: none !important; filter: none !important; }
 
-    .stamp a:hover {
-      border-color: rgba(0, 209, 255, 0.7);
+    .btn-primary { background: linear-gradient(135deg, var(--accent), var(--accent2)); color: #07111f; font-weight: 700; }
+    .btn-ghost   { background: var(--raised); color: var(--muted); border: 1px solid var(--border); }
+    .btn-ghost:hover { color: var(--text); border-color: rgba(99,140,220,.35); }
+    .btn-danger  { background: rgba(248,113,113,.12); color: var(--bad); border: 1px solid rgba(248,113,113,.25); }
+    .btn-sm { padding: 6px 12px; font-size: .79rem; }
+    .btn-lg { padding: 11px 22px; font-size: .9rem; border-radius: var(--r); }
+    .btn-full { width: 100%; }
+
+    /* ── Page title ── */
+    .page-hero { padding: 32px 0 24px; }
+    .page-hero h1 { font-size: 1.9rem; font-weight: 800; letter-spacing: -.04em; line-height: 1.1; margin-bottom: 8px; }
+    .page-hero h1 em { font-style: normal; background: linear-gradient(90deg, var(--accent), var(--accent2)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+    .page-hero p { color: var(--muted); font-size: .93rem; max-width: 560px; }
+
+    /* ── Two-column ── */
+    .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; align-items: start; }
+
+    /* ── Cards / surfaces ── */
+    .card {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: var(--r); overflow: hidden;
     }
-
-    .hero {
-      margin-top: 20px;
-      display: grid;
-      gap: 14px;
-      grid-template-columns: 1.3fr 1fr;
+    .card-header {
+      padding: 16px 20px; border-bottom: 1px solid var(--border);
+      display: flex; align-items: center; gap: 10px;
     }
-
-    .hero-card {
-      border: 1px solid var(--panel-border);
-      border-radius: var(--radius-lg);
+    .card-header-icon {
+      width: 32px; height: 32px; border-radius: 8px; flex-shrink: 0;
+      display: flex; align-items: center; justify-content: center; font-size: .95rem;
       background: var(--panel);
-      backdrop-filter: blur(10px);
-      padding: 22px;
-      box-shadow: var(--shadow);
     }
+    .card-header-text h2 { font-size: .95rem; font-weight: 700; color: var(--text); }
+    .card-header-text p  { font-size: .78rem; color: var(--muted); margin-top: 1px; }
+    .card-body { padding: 20px; display: flex; flex-direction: column; gap: 16px; }
 
-    .headline {
-      margin: 0 0 10px;
-      font-size: clamp(2rem, 3vw, 3.2rem);
-      line-height: 1.04;
-      letter-spacing: -0.03em;
+    /* ── Form elements ── */
+    .field { display: flex; flex-direction: column; gap: 6px; }
+    .field-label {
+      font-size: .72rem; font-weight: 700; text-transform: uppercase; letter-spacing: .08em;
+      color: var(--dim);
     }
-
-    .sub {
-      margin: 0;
-      max-width: 62ch;
-      color: var(--muted);
+    input[type="text"], input[type="email"], input[type="password"], input[type="url"],
+    input[type="number"], textarea {
+      width: 100%; background: var(--panel); border: 1px solid var(--border);
+      color: var(--text); padding: 9px 12px; border-radius: var(--r-sm);
+      font: inherit; font-size: .88rem; transition: border-color .15s, box-shadow .15s;
     }
-
-    .label {
-      margin: 0 0 8px;
-      font-size: 0.74rem;
-      text-transform: uppercase;
-      letter-spacing: 0.09em;
-      color: #95b2df;
-      font-weight: 700;
-    }
-
-    input, textarea {
-      width: 100%;
-      border: 1px solid rgba(142, 165, 219, 0.24);
-      background: rgba(11, 21, 41, 0.9);
-      color: var(--text);
-      padding: 11px 12px;
-      border-radius: var(--radius-sm);
-      font: inherit;
-      transition: border-color .2s ease, box-shadow .2s ease, transform .2s ease;
-    }
-
     input:focus, textarea:focus {
-      border-color: rgba(0, 209, 255, 0.7);
-      box-shadow: 0 0 0 3px rgba(0, 209, 255, 0.18);
-      outline: none;
-      transform: translateY(-1px);
+      outline: none; border-color: var(--border-active);
+      box-shadow: 0 0 0 3px rgba(56,189,248,.1);
     }
-
-    .layout {
-      margin-top: 20px;
-      display: grid;
-      gap: 16px;
-      grid-template-columns: 1.05fr 1fr;
+    input::placeholder, textarea::placeholder { color: var(--dim); }
+    input[type="file"] {
+      background: var(--panel); border: 1px dashed rgba(99,140,220,.3); color: var(--muted);
+      padding: 12px; border-radius: var(--r-sm); cursor: pointer; font: inherit; font-size: .85rem;
+      transition: border-color .15s;
     }
+    input[type="file"]:hover { border-color: rgba(56,189,248,.5); }
 
-    .panel {
-      border: 1px solid var(--panel-border);
-      border-radius: var(--radius-lg);
-      background: var(--panel);
-      backdrop-filter: blur(10px);
-      padding: 18px;
-      box-shadow: var(--shadow);
-      animation: lift .45s ease both;
+    .input-group { display: flex; gap: 8px; }
+    .input-group input { flex: 1; }
+
+    /* ── Inline status ── */
+    .status-row {
+      font-size: .82rem; padding: 9px 12px; border-radius: var(--r-sm);
+      border: 1px solid var(--border); color: var(--muted); background: var(--panel);
+      min-height: 36px;
     }
+    .status-row.ok    { border-color: rgba(52,211,153,.3); color: var(--ok); background: rgba(52,211,153,.06); }
+    .status-row.error { border-color: rgba(248,113,113,.3); color: var(--bad); background: rgba(248,113,113,.06); }
 
-    @keyframes lift {
-      from {
-        opacity: 0;
-        transform: translateY(12px);
-      }
-      to {
-        opacity: 1;
-        transform: translateY(0);
-      }
+    /* ── Divider ── */
+    .divider { border: none; border-top: 1px solid var(--border); margin: 4px 0; }
+
+    /* ── Results ── */
+    .empty-state {
+      padding: 48px 20px; text-align: center; color: var(--muted);
     }
+    .empty-state .icon { font-size: 2.4rem; margin-bottom: 12px; opacity: .6; }
+    .empty-state p { font-size: .88rem; }
 
-    .panel-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: flex-end;
-      margin-bottom: 12px;
+    /* Fit score hero */
+    .score-hero {
+      background: var(--panel); border-radius: var(--r); padding: 20px;
+      display: flex; flex-direction: column; gap: 12px;
     }
-
-    .panel-title {
-      margin: 0;
-      font-size: 1.05rem;
-      letter-spacing: 0.01em;
-    }
-
-    .panel-meta {
-      margin: 4px 0 0;
-      color: var(--muted);
-      font-size: 0.82rem;
-    }
-
-    .stack {
-      display: grid;
-      gap: 12px;
-    }
-
-    .group {
-      border: 1px solid rgba(142, 165, 219, 0.2);
-      border-radius: var(--radius-md);
-      padding: 12px;
-      background: rgba(8, 16, 30, 0.64);
-    }
-
-    .group-title {
-      margin: 0 0 10px;
-      font-size: 0.74rem;
-      text-transform: uppercase;
-      letter-spacing: 0.08em;
-      color: #9bb9e9;
-      font-weight: 700;
-    }
-
-    .row {
-      display: grid;
-      gap: 10px;
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-    }
-
-    label {
-      display: block;
-      margin-bottom: 6px;
-      font-size: 0.84rem;
-      color: #c6d9f8;
-      font-weight: 600;
-    }
-
-    .actions {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 10px;
-      align-items: center;
-    }
-
-    button {
-      border: 0;
-      border-radius: var(--radius-sm);
-      padding: 10px 14px;
-      font: inherit;
-      font-weight: 700;
-      cursor: pointer;
-      transition: transform .16s ease, opacity .16s ease;
-    }
-
-    button:hover {
-      transform: translateY(-1px);
-    }
-
-    button:disabled {
-      opacity: 0.62;
-      cursor: wait;
-      transform: none;
-    }
-
-    .btn-primary {
-      background: linear-gradient(125deg, #00d1ff, #4f7fff 45%, #7b61ff);
-      color: #031126;
-    }
-
-    .btn-secondary {
-      background: linear-gradient(140deg, #24324f, #1b2740);
-      color: #dce8ff;
-      border: 1px solid rgba(142, 165, 219, 0.22);
-    }
-
-    .status-box {
-      border-radius: var(--radius-sm);
-      border: 1px solid rgba(142, 165, 219, 0.2);
-      background: rgba(11, 22, 42, 0.74);
-      padding: 9px 10px;
-      color: var(--muted);
-      font-size: 0.9rem;
-    }
-
-    .metrics {
-      display: grid;
-      gap: 10px;
-      grid-template-columns: repeat(3, minmax(0, 1fr));
-    }
-
-    .metric {
-      border: 1px solid rgba(142, 165, 219, 0.18);
-      border-radius: var(--radius-md);
-      background: rgba(8, 19, 36, 0.75);
-      padding: 10px;
-    }
-
-    .metric .k {
-      margin: 0 0 6px;
-      color: #8ea5cc;
-      font-size: 0.72rem;
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
-      font-weight: 700;
-    }
-
-    .metric .v {
-      margin: 0;
-      font-size: 1.38rem;
-      line-height: 1;
-      font-weight: 800;
-      letter-spacing: -0.02em;
-    }
-
-    .badge {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      border-radius: 999px;
-      padding: 6px 11px;
-      margin-bottom: 10px;
-      font-size: 0.8rem;
-      font-weight: 700;
+    .score-top { display: flex; justify-content: space-between; align-items: center; }
+    .score-number { font-size: 3rem; font-weight: 800; letter-spacing: -.05em; line-height: 1; }
+    .score-label { font-size: .75rem; text-transform: uppercase; letter-spacing: .08em; color: var(--muted); font-weight: 700; margin-top: 4px; }
+    .fit-tag {
+      padding: 5px 14px; border-radius: 999px; font-size: .78rem; font-weight: 700;
       border: 1px solid transparent;
     }
+    .fit-tag.good { color: var(--ok); background: rgba(52,211,153,.1); border-color: rgba(52,211,153,.3); }
+    .fit-tag.warn { color: var(--warn); background: rgba(251,191,36,.1); border-color: rgba(251,191,36,.3); }
+    .fit-tag.bad  { color: var(--bad); background: rgba(248,113,113,.1); border-color: rgba(248,113,113,.3); }
 
-    .badge.good {
-      color: var(--ok);
-      background: rgba(26, 72, 56, 0.56);
-      border-color: rgba(83, 227, 166, 0.34);
+    .progress-track { height: 6px; background: var(--raised); border-radius: 999px; overflow: hidden; }
+    .progress-fill  { height: 100%; border-radius: 999px; transition: width .8s cubic-bezier(.4,0,.2,1); }
+    .progress-fill.good { background: linear-gradient(90deg, #10b981, #34d399); }
+    .progress-fill.warn { background: linear-gradient(90deg, #d97706, #fbbf24); }
+    .progress-fill.bad  { background: linear-gradient(90deg, #dc2626, #f87171); }
+
+    /* Metrics grid */
+    .metrics-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+    .metric-box {
+      background: var(--panel); border: 1px solid var(--border); border-radius: var(--r-sm);
+      padding: 12px; text-align: center;
     }
+    .metric-box .k { font-size: .67rem; text-transform: uppercase; letter-spacing: .08em; color: var(--dim); font-weight: 700; margin-bottom: 5px; }
+    .metric-box .v { font-size: 1.15rem; font-weight: 800; color: var(--text); }
 
-    .badge.warn {
-      color: var(--warn);
-      background: rgba(90, 67, 23, 0.55);
-      border-color: rgba(255, 203, 94, 0.36);
+    /* Skill chips */
+    .section-title {
+      font-size: .7rem; text-transform: uppercase; letter-spacing: .09em;
+      color: var(--dim); font-weight: 700; margin-bottom: 8px;
     }
-
-    .badge.bad {
-      color: var(--bad);
-      background: rgba(95, 34, 49, 0.56);
-      border-color: rgba(255, 127, 155, 0.34);
-    }
-
-    .chips {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 8px;
-    }
-
+    .chips { display: flex; flex-wrap: wrap; gap: 6px; }
     .chip {
-      border: 1px solid rgba(142, 165, 219, 0.24);
-      border-radius: 999px;
-      padding: 5px 10px;
-      font-size: 0.82rem;
-      background: rgba(11, 22, 41, 0.8);
-      color: #d6e6ff;
+      padding: 4px 11px; border-radius: 999px; font-size: .78rem; font-weight: 500;
+      border: 1px solid var(--border); background: var(--raised); color: var(--text);
+    }
+    .chip.missing { border-color: #f87171; color: #fef2f2; background: #5c1a1a; }
+    .chip.matched { border-color: #34d399; color: #f0fdf4; background: #0d3d2a; }
+    .chip.none    { color: var(--dim); font-style: italic; }
+
+    /* Recommendations */
+    .rec-item {
+      display: flex; gap: 10px; align-items: flex-start;
+      padding: 10px 12px; background: var(--panel); border-radius: var(--r-sm);
+      border: 1px solid var(--border); font-size: .83rem; color: var(--muted); line-height: 1.5;
+    }
+    .rec-item .rec-icon { flex-shrink: 0; margin-top: 1px; }
+
+    details summary {
+      cursor: pointer; font-size: .78rem; color: var(--dim); font-weight: 600;
+      text-transform: uppercase; letter-spacing: .07em; padding: 4px 0;
+    }
+    details summary:hover { color: var(--muted); }
+    details[open] summary { color: var(--muted); margin-bottom: 8px; }
+    pre.raw-json {
+      background: var(--panel); border: 1px solid var(--border); border-radius: var(--r-sm);
+      padding: 12px; font-size: .73rem; color: var(--muted); max-height: 200px;
+      overflow: auto; white-space: pre-wrap; word-break: break-all;
     }
 
-    .list {
-      margin: 0;
-      padding-left: 18px;
-      color: #d0e0fb;
+    /* ── Modal ── */
+    .overlay {
+      display: none; position: fixed; inset: 0; z-index: 200;
+      background: rgba(5,10,22,.75); backdrop-filter: blur(8px);
+      align-items: center; justify-content: center;
+    }
+    .overlay.open { display: flex; }
+    .modal {
+      width: min(400px, 94vw); background: var(--surface);
+      border: 1px solid var(--border); border-radius: var(--r);
+      box-shadow: 0 32px 64px rgba(0,0,0,.6); overflow: hidden;
+    }
+    .modal-header {
+      padding: 20px; border-bottom: 1px solid var(--border);
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .modal-header h2 { font-size: 1rem; font-weight: 700; }
+    .modal-close {
+      background: none; border: none; color: var(--dim); font-size: 1.1rem;
+      cursor: pointer; padding: 4px 6px; border-radius: 6px;
+    }
+    .modal-close:hover { color: var(--text); background: var(--raised); transform: none !important; }
+    .modal-body { padding: 20px; display: flex; flex-direction: column; gap: 14px; }
+
+    /* ── Responsive ── */
+    @media (max-width: 900px) {
+      .two-col { grid-template-columns: 1fr; }
+      .metrics-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+    @media (max-width: 560px) {
+      nav .nav-center { display: none; }
+      .page-hero h1 { font-size: 1.5rem; }
     }
 
-    .list li {
-      margin-bottom: 7px;
-    }
-
-    pre {
-      margin: 0;
-      padding: 11px;
-      border-radius: var(--radius-sm);
-      border: 1px solid rgba(142, 165, 219, 0.2);
-      background: rgba(5, 12, 25, 0.92);
-      color: #bed4ff;
-      max-height: 220px;
-      overflow: auto;
-      font-size: 0.78rem;
-    }
-
-    .result-stack {
-      display: grid;
-      gap: 12px;
-    }
-
-    .empty {
-      color: var(--muted);
-      font-size: 0.92rem;
-    }
-
-    @media (max-width: 980px) {
-      .hero, .layout {
-        grid-template-columns: 1fr;
-      }
-      .metrics {
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-      }
-    }
-
-    @media (max-width: 640px) {
-      .shell {
-        width: 95vw;
-        margin-top: 16px;
-      }
-      .row, .metrics {
-        grid-template-columns: 1fr;
-      }
-      .masthead {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 6px;
-      }
-      .hero-card, .panel {
-        padding: 14px;
-      }
-    }
   </style>
 </head>
 <body>
-  <div class="fx-bg"></div>
-  <div class="grid-noise"></div>
-  <div class="sweep"></div>
-  <div class="aurora a"></div>
-  <div class="aurora b"></div>
+<div class="app">
 
-  <main class="shell">
-    <header class="masthead">
-      <div class="brand"><span class="dot"></span>CareerOps Studio</div>
-      <div class="stamp">
-        Real-time fit analysis and ATS intelligence
-        <a href="/history.html">View History</a>
+  <!-- Register Modal -->
+  <div class="overlay" id="registerModal">
+    <div class="modal">
+      <div class="modal-header">
+        <h2>Create Account</h2>
+        <button class="modal-close" id="closeModal">✕</button>
       </div>
-    </header>
+      <div class="modal-body">
+        <div class="field">
+          <label class="field-label" for="regName">Full Name</label>
+          <input id="regName" type="text" placeholder="Jane Smith">
+        </div>
+        <div class="field">
+          <label class="field-label" for="regEmail">Email</label>
+          <input id="regEmail" type="email" placeholder="jane@example.com">
+        </div>
+        <div class="field">
+          <label class="field-label" for="regPassword">Password</label>
+          <input id="regPassword" type="password" placeholder="••••••••">
+        </div>
+        <button class="btn btn-primary btn-full" id="registerBtn">Create Account</button>
+        <div id="regStatus" class="status-row" style="display:none;"></div>
+      </div>
+    </div>
+  </div>
 
-    <section class="hero">
-      <article class="hero-card">
-        <h1 class="headline">Modern Resume Match Lab</h1>
-        <p class="sub">Upload a resume file, provide a public job URL, and get structured fit scoring with actionable changes and ML-assisted ranking.</p>
-      </article>
-      <article class="hero-card">
-        <p class="label">Backend</p>
-        <label for="apiBase">API Base URL</label>
-        <input id="apiBase" value="http://localhost:8000">
-        <label for="authToken" style="margin-top:10px;">Access Token (JWT)</label>
-        <input id="authToken" placeholder="paste bearer token">
-      </article>
-    </section>
+  <!-- Nav -->
+  <nav>
+    <div class="nav-inner">
+      <a href="/app/index.html" class="brand">
+        <span class="brand-icon">C</span>
+        CareerOps
+      </a>
+      <div class="nav-center">
+        <a href="/app/index.html" class="nav-link active">Fit Studio</a>
+        <a href="/app/history.html" class="nav-link">History</a>
+      </div>
+      <div class="nav-right">
+        <button class="btn btn-ghost btn-sm" id="openRegister">Register</button>
+        <button class="btn btn-primary btn-sm" id="loginQuickBtn">Sign In</button>
+      </div>
+    </div>
+  </nav>
 
-    <section class="layout">
-      <article class="panel">
-        <div class="panel-header">
-          <div>
-            <h2 class="panel-title">Input Pipeline</h2>
-            <p class="panel-meta">Define candidate source and target job posting.</p>
+  <div class="shell">
+    <div class="page-hero">
+      <h1>Resume <em>Fit Analysis</em></h1>
+      <p>Upload your resume and a job URL. Get a skill-level gap analysis, ATS signals, and an actionable fit score.</p>
+    </div>
+
+    <div class="two-col">
+
+      <!-- ── Left: Input ── -->
+      <div style="display:flex; flex-direction:column; gap:14px;">
+
+        <!-- Auth card -->
+        <div class="card">
+          <div class="card-header">
+            <div class="card-header-icon">🔑</div>
+            <div class="card-header-text">
+              <h2>Authentication</h2>
+              <p>Login to save scoring history</p>
+            </div>
+          </div>
+          <div class="card-body">
+            <!-- Signed-out view -->
+            <div id="authSignedOut">
+              <div class="field">
+                <label class="field-label" for="loginEmail">Email</label>
+                <div class="input-group">
+                  <input id="loginEmail" type="email" placeholder="your@email.com">
+                  <button class="btn btn-primary btn-sm" id="loginBtn">Sign In</button>
+                </div>
+              </div>
+              <div id="loginStatus" class="status-row" style="display:none;"></div>
+            </div>
+
+            <!-- Signed-in view -->
+            <div id="authSignedIn" style="display:none;">
+              <div style="display:flex; align-items:center; justify-content:space-between; gap:12px;">
+                <div style="display:flex; align-items:center; gap:10px;">
+                  <div style="width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,var(--accent),var(--accent2));display:flex;align-items:center;justify-content:center;font-size:.85rem;font-weight:700;color:#07111f;" id="authAvatar">?</div>
+                  <div>
+                    <div style="font-size:.88rem;font-weight:600;color:var(--text);" id="authEmailDisplay">—</div>
+                    <div style="font-size:.75rem;color:var(--ok);">● Signed in</div>
+                  </div>
+                </div>
+                <button class="btn btn-ghost btn-sm" id="signOutBtn">Sign Out</button>
+              </div>
+            </div>
+
+            <!-- Hidden token input (never shown) -->
+            <input id="authToken" type="hidden">
+
+            <hr class="divider">
+            <div class="field">
+              <label class="field-label" for="apiBase">API Base URL</label>
+              <input id="apiBase" type="text" value="http://localhost:8000">
+            </div>
           </div>
         </div>
 
-        <div class="stack">
-          <div class="group">
-            <p class="group-title">IDs (optional)</p>
-            <div class="row">
-              <div>
-                <label for="resumeId">Resume ID</label>
-                <input id="resumeId" placeholder="uuid-or-custom">
-              </div>
-              <div>
-                <label for="jobId">Job ID</label>
-                <input id="jobId" placeholder="uuid-or-custom">
-              </div>
+        <!-- Score input card -->
+        <div class="card">
+          <div class="card-header">
+            <div class="card-header-icon">📄</div>
+            <div class="card-header-text">
+              <h2>Inputs</h2>
+              <p>Resume file + job posting URL</p>
             </div>
           </div>
-
-          <div class="group">
-            <p class="group-title">Resume</p>
-            <label for="resumeFile">Resume File (.pdf, .docx, .txt)</label>
-            <input id="resumeFile" type="file" accept=".pdf,.docx,.txt">
-          </div>
-
-          <div class="group">
-            <p class="group-title">Job</p>
-            <label for="jobUrl">Job URL</label>
-            <input id="jobUrl" type="url" placeholder="https://company.com/careers/job-123">
-          </div>
-
-          <div class="group">
-            <p class="group-title">Actions</p>
-            <div class="actions">
-              <button class="btn-primary" id="computeBtn">Compute Fit</button>
-              <button class="btn-secondary" id="sampleBtn">Load Sample URL</button>
-              <label style="margin:0;">
-                <input type="checkbox" id="useMl" checked> Use ML model when available
+          <div class="card-body">
+            <div class="field">
+              <label class="field-label">Resume File
+                <input id="resumeFile" type="file" accept=".pdf,.docx,.txt" style="margin-top:6px;">
               </label>
             </div>
-          </div>
-
-          <div class="status-box" id="statusLine">Ready.</div>
-        </div>
-      </article>
-
-      <article class="panel">
-        <div class="panel-header">
-          <div>
-            <h2 class="panel-title">Scoring Dashboard</h2>
-            <p class="panel-meta">Inspect fit components, ATS signals, and recommendations.</p>
+            <div class="field">
+              <label class="field-label" for="jobUrl">Job Posting URL</label>
+              <input id="jobUrl" type="url" placeholder="https://company.com/careers/job-title">
+            </div>
+            <button class="btn btn-primary btn-lg btn-full" id="computeBtn">
+              Compute Fit Score
+            </button>
+            <div id="statusLine" class="status-row" style="display:none;"></div>
           </div>
         </div>
 
-        <div id="emptyState" class="empty">Run a score to render analysis output.</div>
+      </div>
 
-        <div id="resultView" style="display:none;">
-          <div class="result-stack">
-            <div class="group">
-              <div id="fitBadge" class="badge warn">Awaiting score</div>
-              <div class="metrics">
-                <div class="metric">
-                  <p class="k">Fit Index</p>
-                  <p class="v" id="fitIndex">-</p>
-                </div>
-                <div class="metric">
-                  <p class="k">ML Probability</p>
-                  <p class="v" id="mlProb">-</p>
-                </div>
-                <div class="metric">
-                  <p class="k">Model</p>
-                  <p class="v" id="modelStatus">-</p>
-                </div>
-                <div class="metric">
-                  <p class="k">Semantic</p>
-                  <p class="v" id="semanticScore">-</p>
-                </div>
-                <div class="metric">
-                  <p class="k">Keyword</p>
-                  <p class="v" id="keywordCoverage">-</p>
-                </div>
-                <div class="metric">
-                  <p class="k">ATS Risk</p>
-                  <p class="v" id="atsRisk">-</p>
-                </div>
+      <!-- ── Right: Results ── -->
+      <div class="card">
+        <div class="card-header">
+          <div class="card-header-icon">📊</div>
+          <div class="card-header-text">
+            <h2>Scoring Dashboard</h2>
+            <p>Skill gaps, ATS signals, and fit score</p>
+          </div>
+        </div>
+
+        <div id="emptyState" class="empty-state">
+          <div class="icon">🎯</div>
+          <p>Upload a resume and job URL to see your fit analysis.</p>
+        </div>
+
+        <div id="resultView" style="display:none;" class="card-body">
+
+          <!-- Score hero -->
+          <div class="score-hero">
+            <div class="score-top">
+              <div>
+                <div class="score-number" id="fitIndexBig">—</div>
+                <div class="score-label">Fit Index</div>
               </div>
+              <span class="fit-tag" id="fitTag">—</span>
             </div>
-
-            <div class="group">
-              <p class="group-title">Top Missing Keywords</p>
-              <div class="chips" id="missingKeywords"></div>
-            </div>
-
-            <div class="group">
-              <p class="group-title">Top Matched Keywords</p>
-              <div class="chips" id="matchedKeywords"></div>
-            </div>
-
-            <div class="group">
-              <p class="group-title">Recommendations</p>
-              <ul class="list" id="recommendations"></ul>
-            </div>
-
-            <div class="group">
-              <p class="group-title">Raw Explanation JSON</p>
-              <pre id="rawJson"></pre>
+            <div class="progress-track">
+              <div class="progress-fill" id="fitBar" style="width:0%"></div>
             </div>
           </div>
-        </div>
-      </article>
-    </section>
-  </main>
 
-  <script>
-    const els = {
-      apiBase: document.getElementById("apiBase"),
-      authToken: document.getElementById("authToken"),
-      resumeId: document.getElementById("resumeId"),
-      jobId: document.getElementById("jobId"),
-      resumeFile: document.getElementById("resumeFile"),
-      jobUrl: document.getElementById("jobUrl"),
-      useMl: document.getElementById("useMl"),
-      computeBtn: document.getElementById("computeBtn"),
-      sampleBtn: document.getElementById("sampleBtn"),
-      statusLine: document.getElementById("statusLine"),
-      emptyState: document.getElementById("emptyState"),
-      resultView: document.getElementById("resultView"),
-      fitBadge: document.getElementById("fitBadge"),
-      fitIndex: document.getElementById("fitIndex"),
-      mlProb: document.getElementById("mlProb"),
-      semanticScore: document.getElementById("semanticScore"),
-      keywordCoverage: document.getElementById("keywordCoverage"),
-      atsRisk: document.getElementById("atsRisk"),
-      modelStatus: document.getElementById("modelStatus"),
-      missingKeywords: document.getElementById("missingKeywords"),
-      matchedKeywords: document.getElementById("matchedKeywords"),
-      recommendations: document.getElementById("recommendations"),
-      rawJson: document.getElementById("rawJson")
+          <!-- Metrics -->
+          <div class="metrics-grid">
+            <div class="metric-box"><div class="k">Semantic Sim.</div><div class="v" id="semanticScore">—</div></div>
+            <div class="metric-box"><div class="k">Skill Match</div><div class="v" id="keywordCoverage">—</div></div>
+            <div class="metric-box"><div class="k">ATS Risk</div><div class="v" id="atsRisk">—</div></div>
+            <div class="metric-box"><div class="k">ML Prob</div><div class="v" id="mlProb">—</div></div>
+            <div class="metric-box"><div class="k">ML Model</div><div class="v" id="modelStatus">—</div></div>
+            <div class="metric-box"><div class="k">Skills Found</div><div class="v" id="skillsFound">—</div></div>
+          </div>
+
+          <!-- Missing skills -->
+          <div>
+            <div class="section-title">Missing Skills — add these to your resume</div>
+            <div class="chips" id="missingKeywords"></div>
+          </div>
+
+          <!-- Matched skills -->
+          <div>
+            <div class="section-title">Matched Skills</div>
+            <div class="chips" id="matchedKeywords"></div>
+          </div>
+
+          <!-- Recommendations -->
+          <div>
+            <div class="section-title">Recommendations</div>
+            <div id="recommendations" style="display:flex; flex-direction:column; gap:6px;"></div>
+          </div>
+
+          <!-- Raw JSON -->
+          <details>
+            <summary>Raw JSON</summary>
+            <pre class="raw-json" id="rawJson"></pre>
+          </details>
+
+        </div>
+      </div>
+
+    </div>
+
+    <!-- ── Resume Editor (appears after scoring) ── -->
+    <div id="editorSection" style="display:none; margin-top:16px;">
+      <div class="card">
+        <div class="card-header">
+          <div class="card-header-icon">✏️</div>
+          <div class="card-header-text">
+            <h2>Resume Editor</h2>
+            <p>View your original PDF on the left. Edit the text on the right — click any missing skill chip to insert it at your cursor.</p>
+          </div>
+          <div style="margin-left:auto; display:flex; gap:8px; flex-wrap:wrap;">
+            <button class="btn btn-ghost btn-sm" id="downloadOriginalBtn">⬇ Original</button>
+            <button class="btn btn-primary btn-sm" id="downloadPdfBtn">⬇ Download Edited PDF</button>
+          </div>
+        </div>
+
+        <!-- Missing skills chips — click to insert -->
+        <div id="insertChipsWrap" style="padding:12px 20px; border-bottom:1px solid var(--border);">
+          <div style="font-size:.72rem; text-transform:uppercase; letter-spacing:.08em; color:var(--dim); font-weight:700; margin-bottom:8px;">Missing skills — click to insert at cursor</div>
+          <div id="insertChips" style="display:flex; flex-wrap:wrap; gap:6px;"></div>
+        </div>
+
+        <!-- Split: editable text (left) + live PDF preview (right) -->
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:0; min-height:780px;">
+
+          <!-- Left: editable text -->
+          <div style="border-right:1px solid var(--border); padding:16px; display:flex; flex-direction:column; gap:10px;">
+            <div style="display:flex; align-items:center; justify-content:space-between;">
+              <div style="font-size:.72rem; text-transform:uppercase; letter-spacing:.08em; color:var(--dim); font-weight:700;">Edit Text</div>
+              <span id="livePreviewStatus" style="font-size:.72rem; color:var(--dim);"></span>
+            </div>
+            <textarea id="resumeEditor"
+              spellcheck="false"
+              style="flex:1; min-height:720px; width:100%; padding:14px; font-family:'Courier New', monospace; font-size:12.5px; line-height:1.65; background:var(--surface); color:var(--text); border:1px solid var(--border); border-radius:var(--r-sm); resize:vertical; outline:none;"
+              placeholder="Resume text will appear here after scoring…"></textarea>
+          </div>
+
+          <!-- Right: live PDF preview (updates as you type) -->
+          <div style="padding:16px; display:flex; flex-direction:column; gap:10px;">
+            <div style="font-size:.72rem; text-transform:uppercase; letter-spacing:.08em; color:var(--dim); font-weight:700;">Live Preview</div>
+            <embed id="pdfViewer" type="application/pdf"
+              style="flex:1; width:100%; min-height:720px; border:1px solid var(--border); border-radius:var(--r-sm); background:#fff;">
+          </div>
+
+        </div>
+
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script src="https://unpkg.com/pdf-lib@1.17.1/dist/pdf-lib.min.js"></script>
+<script>
+  const API    = () => document.getElementById("apiBase").value.replace(/\/$/, "");
+  const token  = () => document.getElementById("authToken").value.trim();
+  const authHd = () => token() ? { Authorization: "Bearer " + token() } : {};
+
+  // Auth state
+  function setAuthState(token, email) {
+    document.getElementById("authToken").value = token || "";
+    if (token) {
+      document.getElementById("authSignedOut").style.display = "none";
+      document.getElementById("authSignedIn").style.display  = "";
+      document.getElementById("authEmailDisplay").textContent = email || "Signed in";
+      document.getElementById("authAvatar").textContent = (email || "?")[0].toUpperCase();
+    } else {
+      document.getElementById("authSignedOut").style.display = "";
+      document.getElementById("authSignedIn").style.display  = "none";
+    }
+  }
+
+  const savedToken = localStorage.getItem("careerops_token") || "";
+  const savedEmail = localStorage.getItem("careerops_email") || "";
+  setAuthState(savedToken, savedEmail);
+
+  document.getElementById("signOutBtn").addEventListener("click", () => {
+    localStorage.removeItem("careerops_token");
+    localStorage.removeItem("careerops_email");
+    setAuthState("", "");
+  });
+
+  // Register modal
+  document.getElementById("openRegister").addEventListener("click", () => {
+    document.getElementById("registerModal").classList.add("open");
+  });
+  document.getElementById("closeModal").addEventListener("click", () => {
+    document.getElementById("registerModal").classList.remove("open");
+  });
+  document.getElementById("registerBtn").addEventListener("click", async () => {
+    const name     = document.getElementById("regName").value.trim();
+    const email    = document.getElementById("regEmail").value.trim();
+    const password = document.getElementById("regPassword").value;
+    const status   = document.getElementById("regStatus");
+    if (!email || !password) { showStatus(status, "Email and password required.", "error"); return; }
+    showStatus(status, "Creating account…", "");
+    try {
+      const res  = await fetch(API() + "/api/v1/auth/register", {
+        method: "POST", headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, full_name: name || undefined, password })
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        const detail = Array.isArray(data.detail)
+          ? data.detail.map(e => `${e.loc?.slice(-1)[0]}: ${e.msg}`).join("; ")
+          : (data.detail || "Registration failed");
+        throw new Error(detail);
+      }
+      showStatus(status, "Account created! Click Sign In above to continue.", "ok");
+      document.getElementById("loginEmail").value = email;
+    } catch(e) {
+      showStatus(status, "Error: " + e.message, "error");
+    }
+  });
+
+  // Login
+  async function doLogin() {
+    const email  = document.getElementById("loginEmail").value.trim();
+    const status = document.getElementById("loginStatus");
+    if (!email) { showStatus(status, "Enter your email first.", "error"); return; }
+    showStatus(status, "Signing in…", "");
+    try {
+      const res  = await fetch(`${API()}/api/v1/auth/token?email=${encodeURIComponent(email)}&password=placeholder`, {
+        method: "POST"
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.detail || "Login failed");
+      localStorage.setItem("careerops_token", data.access_token);
+      localStorage.setItem("careerops_email", email);
+      setAuthState(data.access_token, email);
+    } catch(e) {
+      showStatus(status, "Error: " + e.message, "error");
+    }
+  }
+  document.getElementById("loginBtn").addEventListener("click", doLogin);
+  document.getElementById("loginQuickBtn").addEventListener("click", doLogin);
+
+  // Helpers
+  function showStatus(el, msg, type) {
+    el.style.display = "";
+    el.textContent = msg;
+    el.className = "status-row" + (type ? " " + type : "");
+  }
+  function pct(v) {
+    if (v == null) return "—";
+    const n = Number(v);
+    return Number.isNaN(n) ? "—" : (n * 100).toFixed(1) + "%";
+  }
+  function fmt(v, d = 2) {
+    if (v == null) return "—";
+    const n = Number(v);
+    return Number.isNaN(n) ? "—" : n.toFixed(d);
+  }
+  // Display cosine similarity as a 0–1 score, not a percentage
+  function sim(v) {
+    if (v == null) return "—";
+    const n = Number(v);
+    return Number.isNaN(n) ? "—" : n.toFixed(2);
+  }
+  function fitClass(score) {
+    if (score >= 70) return "good";
+    if (score >= 45) return "warn";
+    return "bad";
+  }
+  function renderChips(container, words, cls) {
+    container.innerHTML = "";
+    if (!words || !words.length) {
+      container.innerHTML = '<span class="chip none">None found</span>';
+      return;
+    }
+    words.forEach(w => {
+      const s = document.createElement("span");
+      s.className = "chip " + cls;
+      s.textContent = w;
+      container.appendChild(s);
+    });
+  }
+
+  // Compute score
+  document.getElementById("computeBtn").addEventListener("click", async () => {
+    const file   = document.getElementById("resumeFile").files[0];
+    const jobUrl = document.getElementById("jobUrl").value.trim();
+    const status = document.getElementById("statusLine");
+
+    if (!file)   { showStatus(status, "Select a resume file (.pdf, .docx, or .txt).", "error"); return; }
+    if (!jobUrl) { showStatus(status, "Enter a job posting URL.", "error"); return; }
+    if (!token()) { showStatus(status, "Sign in first to get a JWT token.", "error"); return; }
+
+    const fd = new FormData();
+    fd.append("resume_file", file);
+    fd.append("job_url", jobUrl);
+    fd.append("use_ml_model", "false");
+
+    document.getElementById("computeBtn").disabled = true;
+    showStatus(status, "Computing — embedding model may take ~20s on first run…", "");
+
+    try {
+      const res  = await fetch(API() + "/api/v1/matches/compute-from-file-url", {
+        method: "POST", headers: authHd(), body: fd
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.detail || JSON.stringify(data));
+
+      // Show results
+      document.getElementById("emptyState").style.display  = "none";
+      document.getElementById("resultView").style.display  = "flex";
+
+      const score = Number(data.fit_index || 0);
+      const cls   = fitClass(score);
+
+      const colorMap = { good: "var(--ok)", warn: "var(--warn)", bad: "var(--bad)" };
+      const labelMap = { good: "Strong Fit", warn: "Moderate Fit", bad: "Low Fit" };
+      document.getElementById("fitIndexBig").textContent = fmt(score);
+      document.getElementById("fitIndexBig").style.color = colorMap[cls];
+
+      const tag = document.getElementById("fitTag");
+      tag.className = "fit-tag " + cls;
+      tag.textContent = labelMap[cls];
+
+      const bar = document.getElementById("fitBar");
+      bar.style.width = Math.min(100, score) + "%";
+      bar.className = "progress-fill " + cls;
+
+      document.getElementById("semanticScore").textContent   = sim(data.semantic_score);
+      document.getElementById("keywordCoverage").textContent = pct(data.keyword_coverage);
+      document.getElementById("atsRisk").textContent         = pct(data.ats_risk_score);
+      document.getElementById("mlProb").textContent          = data.ml_fit_probability == null ? "—" : pct(data.ml_fit_probability);
+      document.getElementById("modelStatus").textContent     = data.ml_model_info?.loaded ? "Loaded" : "N/A";
+
+      const stats = data.explanation_json?.skill_stats;
+      document.getElementById("skillsFound").textContent = stats
+        ? `${stats.matched}/${stats.jd_skills_found}`
+        : "—";
+
+      renderChips(document.getElementById("missingKeywords"), data.top_missing_keywords, "missing");
+      renderChips(document.getElementById("matchedKeywords"), data.top_matched_keywords, "matched");
+
+      const recs  = data.explanation_json?.recommendations || [];
+      const recsEl = document.getElementById("recommendations");
+      recsEl.innerHTML = "";
+      recs.forEach(r => {
+        const d = document.createElement("div");
+        d.className = "rec-item";
+        d.innerHTML = `<span class="rec-icon">💡</span><span>${r.message}${r.missing_keywords?.length ? " — " + r.missing_keywords.join(", ") : ""}</span>`;
+        recsEl.appendChild(d);
+      });
+
+      document.getElementById("rawJson").textContent = JSON.stringify(data.explanation_json, null, 2);
+
+      // Resume editor — file is client-side; extracted text comes from API
+      const resumeFile = document.getElementById("resumeFile").files[0];
+      if (resumeFile) {
+        _originalName = resumeFile.name;
+        buildEditor(resumeFile, data.top_missing_keywords || [], data.resume_text || "");
+      }
+
+      showStatus(status, "Score computed successfully.", "ok");
+    } catch(e) {
+      showStatus(status, "Error: " + e.message, "error");
+    } finally {
+      document.getElementById("computeBtn").disabled = false;
+    }
+  });
+
+  // ── Resume Editor ──────────────────────────────────────────────
+
+  let _originalName  = "";
+  let _missingSkills = [];
+  let _resumeFile    = null;
+
+  function buildEditor(file, missingSkills, resumeText) {
+    _resumeFile    = file;
+    _missingSkills = missingSkills;
+    document.getElementById("editorSection").style.display = "";
+
+    // Left pane: original PDF via blob URL
+    const viewer = document.getElementById("pdfViewer");
+    const prev = viewer._blobUrl;
+    if (prev) URL.revokeObjectURL(prev);
+    const url = URL.createObjectURL(file);
+    viewer._blobUrl = url;
+    viewer.src = url;
+
+    // Right pane: editable text pre-filled with extracted resume text
+    const editor = document.getElementById("resumeEditor");
+    editor.value = resumeText || "";
+
+    // Missing skill chips — click inserts at cursor in textarea
+    const insertWrap = document.getElementById("insertChips");
+    insertWrap.innerHTML = "";
+    if (missingSkills.length) {
+      document.getElementById("insertChipsWrap").style.display = "";
+      missingSkills.forEach(skill => {
+        const chip = document.createElement("span");
+        chip.className = "chip missing";
+        chip.textContent = "+ " + skill;
+        chip.style.cursor = "pointer";
+        chip.title = "Click to insert at cursor";
+        chip.addEventListener("click", () => {
+          const ta    = document.getElementById("resumeEditor");
+          const start = ta.selectionStart;
+          const end   = ta.selectionEnd;
+          const before = ta.value.slice(0, start);
+          const after  = ta.value.slice(end);
+          const insert = skill;
+          ta.value = before + insert + after;
+          ta.selectionStart = ta.selectionEnd = start + insert.length;
+          ta.focus();
+        });
+        insertWrap.appendChild(chip);
+      });
+    } else {
+      document.getElementById("insertChipsWrap").style.display = "none";
+    }
+
+    // Trigger initial live preview
+    generatePreview();
+
+    document.getElementById("editorSection").scrollIntoView({ behavior: "smooth", block: "start" });
+  }
+
+  // ── Live PDF preview ────────────────────────────────────────────
+  let _previewDebounce = null;
+  let _previewBlobUrl  = null;
+
+  async function generatePreview() {
+    const text = document.getElementById("resumeEditor").value;
+    if (!text.trim()) return;
+
+    const status = document.getElementById("livePreviewStatus");
+    status.textContent = "Generating…";
+
+    const { PDFDocument, rgb, StandardFonts } = globalThis.PDFLib;
+    const pdfDoc   = await PDFDocument.create();
+    const font     = await pdfDoc.embedFont(StandardFonts.Helvetica);
+    const fontBold = await pdfDoc.embedFont(StandardFonts.HelveticaBold);
+
+    const pageW = 612, pageH = 792, margin = 50;
+    const maxW  = pageW - margin * 2;
+    let page = pdfDoc.addPage([pageW, pageH]);
+    let y    = pageH - margin;
+
+    const addPage = () => { page = pdfDoc.addPage([pageW, pageH]); y = pageH - margin; };
+    const ensureSpace = needed => { if (y < margin + needed) addPage(); };
+    const wrap = (str, size) => {
+      const words = str.split(" ");
+      const lines = [];
+      let line = "";
+      for (const w of words) {
+        const candidate = line ? line + " " + w : w;
+        if (font.widthOfTextAtSize(candidate, size) > maxW && line) { lines.push(line); line = w; }
+        else line = candidate;
+      }
+      if (line) lines.push(line);
+      return lines;
     };
 
-    function formatPercent(value) {
-      if (value === null || value === undefined || Number.isNaN(value)) {
-        return "-";
-      }
-      return (Number(value) * 100).toFixed(1) + "%";
-    }
-
-    function authHeaders() {
-      const token = (els.authToken.value || "").trim();
-      if (!token) {
-        return {};
-      }
-      return { Authorization: "Bearer " + token };
-    }
-
-    function formatScore(value) {
-      if (value === null || value === undefined || Number.isNaN(value)) {
-        return "-";
-      }
-      return Number(value).toFixed(2);
-    }
-
-    function setBadge(fitIndex) {
-      els.fitBadge.className = "badge";
-      if (fitIndex >= 75) {
-        els.fitBadge.classList.add("good");
-        els.fitBadge.textContent = "Strong fit";
-      } else if (fitIndex >= 50) {
-        els.fitBadge.classList.add("warn");
-        els.fitBadge.textContent = "Moderate fit";
+    for (const raw of text.split("\n")) {
+      const line = raw.trim();
+      if (!line) { y -= 6; continue; }
+      const isHeading = line.length >= 3 && line === line.toUpperCase() && /[A-Z]/.test(line);
+      if (isHeading) {
+        ensureSpace(22);
+        y -= 4;
+        page.drawText(line, { x: margin, y, size: 11, font: fontBold, color: rgb(0.05, 0.47, 0.75) });
+        y -= 13;
+        page.drawLine({ start:{x:margin,y}, end:{x:pageW-margin,y}, thickness:0.5, color:rgb(0.05,0.47,0.75) });
+        y -= 8;
       } else {
-        els.fitBadge.classList.add("bad");
-        els.fitBadge.textContent = "Low fit";
-      }
-    }
-
-    function renderKeywords(container, keywords) {
-      container.innerHTML = "";
-      if (!keywords || !keywords.length) {
-        container.innerHTML = "<span class=\"chip\">None</span>";
-        return;
-      }
-      keywords.forEach((word) => {
-        const chip = document.createElement("span");
-        chip.className = "chip";
-        chip.textContent = word;
-        container.appendChild(chip);
-      });
-    }
-
-    function renderRecommendations(recommendations) {
-      els.recommendations.innerHTML = "";
-      if (!recommendations || !recommendations.length) {
-        const li = document.createElement("li");
-        li.textContent = "No recommendations generated.";
-        els.recommendations.appendChild(li);
-        return;
-      }
-      recommendations.forEach((rec) => {
-        const li = document.createElement("li");
-        let msg = rec.message || rec.type || "Recommendation";
-        if (Array.isArray(rec.missing_keywords) && rec.missing_keywords.length) {
-          msg += " Missing: " + rec.missing_keywords.join(", ");
+        const wrapped = wrap(line, 10);
+        for (const wl of wrapped) {
+          ensureSpace(14);
+          page.drawText(wl, { x: margin, y, size: 10, font, color: rgb(0.08, 0.08, 0.08) });
+          y -= 14;
         }
-        li.textContent = msg;
-        els.recommendations.appendChild(li);
-      });
+      }
     }
 
-    async function computeFit() {
-      const file = els.resumeFile.files && els.resumeFile.files[0];
-      const jobUrl = els.jobUrl.value.trim();
-      if (!file || !jobUrl) {
-        els.statusLine.textContent = "Resume file and job URL are required.";
-        return;
-      }
-      const formData = new FormData();
-      formData.append("resume_file", file);
-      formData.append("job_url", jobUrl);
-      formData.append("resume_id", els.resumeId.value.trim());
-      formData.append("job_id", els.jobId.value.trim());
-      formData.append("use_ml_model", String(els.useMl.checked));
+    const pdfBytes = await pdfDoc.save();
+    const blob     = new Blob([pdfBytes], { type: "application/pdf" });
+    const newUrl   = URL.createObjectURL(blob);
 
-      els.computeBtn.disabled = true;
-      els.statusLine.textContent = "Computing...";
+    if (_previewBlobUrl) URL.revokeObjectURL(_previewBlobUrl);
+    _previewBlobUrl = newUrl;
+    document.getElementById("pdfViewer").src = newUrl;
+    status.textContent = "Preview updated";
+    setTimeout(() => { status.textContent = ""; }, 1500);
+  }
 
-      try {
-        const base = els.apiBase.value.replace(/\/$/, "");
-        const response = await fetch(base + "/api/v1/matches/compute-from-file-url", {
-          method: "POST",
-          headers: authHeaders(),
-          body: formData
-        });
-        if (!response.ok) {
-          const errText = await response.text();
-          throw new Error("Request failed: " + response.status + " " + errText);
+  document.addEventListener("input", e => {
+    if (e.target.id !== "resumeEditor") return;
+    clearTimeout(_previewDebounce);
+    document.getElementById("livePreviewStatus").textContent = "Typing…";
+    _previewDebounce = setTimeout(generatePreview, 800);
+  });
+
+  // Download original — exact file unchanged
+  document.getElementById("downloadOriginalBtn").addEventListener("click", () => {
+    if (!_resumeFile) return;
+    const url = URL.createObjectURL(_resumeFile);
+    const a   = Object.assign(document.createElement("a"), { href: url, download: _resumeFile.name });
+    a.click();
+    URL.revokeObjectURL(url);
+  });
+
+  // Download Edited PDF — generates a new PDF from the textarea content using pdf-lib
+  document.getElementById("downloadPdfBtn").addEventListener("click", async () => {
+    const btn = document.getElementById("downloadPdfBtn");
+    btn.disabled = true;
+    btn.textContent = "Generating…";
+
+    try {
+      const { PDFDocument, rgb, StandardFonts } = globalThis.PDFLib;
+      const text = document.getElementById("resumeEditor").value;
+      if (!text.trim()) { alert("No text to export."); return; }
+
+      const pdfDoc  = await PDFDocument.create();
+      const font     = await pdfDoc.embedFont(StandardFonts.Helvetica);
+      const fontBold = await pdfDoc.embedFont(StandardFonts.HelveticaBold);
+
+      const pageW  = 612, pageH = 792;
+      const margin = 50;
+      const maxW   = pageW - margin * 2;
+
+      let page = pdfDoc.addPage([pageW, pageH]);
+      let y    = pageH - margin;
+
+      const addPage = () => {
+        page = pdfDoc.addPage([pageW, pageH]);
+        y = pageH - margin;
+      };
+
+      const ensureSpace = (needed) => { if (y < margin + needed) addPage(); };
+
+      // Measure text width (approximate — Helvetica metrics)
+      const measureLine = (str, size) => font.widthOfTextAtSize(str, size);
+
+      // Word-wrap a string into lines fitting maxW
+      const wrap = (str, size) => {
+        const words = str.split(" ");
+        const lines = [];
+        let line = "";
+        for (const w of words) {
+          const candidate = line ? line + " " + w : w;
+          if (measureLine(candidate, size) > maxW && line) {
+            lines.push(line);
+            line = w;
+          } else {
+            line = candidate;
+          }
+        }
+        if (line) lines.push(line);
+        return lines;
+      };
+
+      const rawLines = text.split("\n");
+      for (const raw of rawLines) {
+        const line = raw.trim();
+
+        if (!line) {
+          y -= 6; // blank line spacing
+          continue;
         }
 
-        const data = await response.json();
-        els.emptyState.style.display = "none";
-        els.resultView.style.display = "block";
+        // Detect section headings: ALL-CAPS lines (≥3 chars, no lowercase)
+        const isHeading = line.length >= 3 && line === line.toUpperCase() && /[A-Z]/.test(line);
 
-        els.fitIndex.textContent = formatScore(data.fit_index);
-        els.mlProb.textContent = formatPercent(data.ml_fit_probability);
-        els.semanticScore.textContent = formatPercent(data.semantic_score);
-        els.keywordCoverage.textContent = formatPercent(data.keyword_coverage);
-        els.atsRisk.textContent = formatPercent(data.ats_risk_score);
-        els.modelStatus.textContent = data.ml_model_info && data.ml_model_info.loaded ? "Loaded" : "Fallback";
-        setBadge(Number(data.fit_index || 0));
-        renderKeywords(els.missingKeywords, data.top_missing_keywords || []);
-        renderKeywords(els.matchedKeywords, data.top_matched_keywords || []);
-        renderRecommendations(data.explanation_json && data.explanation_json.recommendations);
-        els.rawJson.textContent = JSON.stringify(data.explanation_json || {}, null, 2);
-        els.statusLine.textContent = "Score computed.";
-      } catch (error) {
-        els.statusLine.textContent = "Error: " + error.message;
-      } finally {
-        els.computeBtn.disabled = false;
+        if (isHeading) {
+          ensureSpace(22);
+          y -= 4;
+          page.drawText(line, { x: margin, y, size: 11, font: fontBold, color: rgb(0.05, 0.47, 0.75) });
+          y -= 13;
+          // underline
+          page.drawLine({ start:{x:margin,y}, end:{x:pageW-margin,y}, thickness:0.5, color:rgb(0.05,0.47,0.75) });
+          y -= 8;
+        } else {
+          const size = 10;
+          const lh   = 14;
+          const wrapped = wrap(line, size);
+          for (const wl of wrapped) {
+            ensureSpace(lh);
+            page.drawText(wl, { x: margin, y, size, font, color: rgb(0.08, 0.08, 0.08) });
+            y -= lh;
+          }
+        }
       }
+
+      const pdfBytes = await pdfDoc.save();
+      const blob     = new Blob([pdfBytes], { type: "application/pdf" });
+      const url      = URL.createObjectURL(blob);
+      const baseName = (_originalName || "resume").replace(/\.[^.]+$/, "");
+      const a        = Object.assign(document.createElement("a"), {
+        href: url, download: baseName + "_edited.pdf",
+      });
+      a.click();
+      URL.revokeObjectURL(url);
+    } finally {
+      btn.disabled = false;
+      btn.textContent = "⬇ Download Edited PDF";
     }
-
-    function loadSample() {
-      els.jobUrl.value = "https://boards.greenhouse.io";
-      els.statusLine.textContent = "Sample URL loaded. Select a resume file to compute.";
-    }
-
-    els.authToken.value = localStorage.getItem("careerops_auth_token") || "";
-    els.authToken.addEventListener("input", () => {
-      localStorage.setItem("careerops_auth_token", els.authToken.value.trim());
-    });
-
-    els.computeBtn.addEventListener("click", computeFit);
-    els.sampleBtn.addEventListener("click", loadSample);
-  </script>
+  });
+</script>
 </body>
 </html>

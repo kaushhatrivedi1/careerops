@@ -3,258 +3,561 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>CareerOps History</title>
+  <title>CareerOps — History</title>
   <style>
     :root {
-      --bg: #060b14;
-      --panel: rgba(10, 18, 36, 0.74);
-      --border: rgba(145, 171, 224, 0.24);
-      --text: #e6efff;
-      --muted: #9eb3dc;
-      --accent: #00d1ff;
+      --bg: #0f1623; --surface: #161e2e; --panel: #1a2235;
+      --border: rgba(100,140,220,.18); --text: #e2ecff; --muted: #8ba4cc;
+      --accent: #38bdf8; --accent2: #818cf8;
+      --ok: #34d399; --warn: #fbbf24; --bad: #f87171;
       --radius: 14px;
     }
-    * { box-sizing: border-box; }
-    body {
-      margin: 0;
-      font-family: "Sora", "Segoe UI", sans-serif;
-      color: var(--text);
-      background:
-        radial-gradient(32rem 20rem at 8% 14%, rgba(0, 209, 255, 0.15), transparent 68%),
-        radial-gradient(30rem 18rem at 92% 10%, rgba(109, 125, 255, 0.16), transparent 70%),
-        var(--bg);
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { background: var(--bg); color: var(--text); font-family: "Inter","Segoe UI",system-ui,sans-serif; font-size: 14px; min-height: 100vh; }
+    body::before {
+      content: ""; position: fixed; top: 0; left: 0; right: 0; height: 320px;
+      background: radial-gradient(ellipse 80% 40% at 50% -10%,rgba(56,189,248,.18) 0%,transparent 70%),
+                  radial-gradient(ellipse 60% 30% at 80% 0%,rgba(129,140,248,.14) 0%,transparent 70%);
+      pointer-events: none; z-index: 0;
     }
-    .shell {
-      width: min(1180px, 94vw);
-      margin: 24px auto 28px;
-    }
-    .top {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 10px;
-      margin-bottom: 14px;
-    }
-    .title {
-      margin: 0;
-      font-size: 1.5rem;
-      letter-spacing: -0.02em;
-    }
-    .sub {
-      margin: 4px 0 0;
-      color: var(--muted);
-      font-size: 0.9rem;
-    }
-    .top a {
-      color: #d4e4ff;
-      text-decoration: none;
-      border: 1px solid var(--border);
-      padding: 8px 12px;
-      border-radius: 999px;
-      font-size: 0.82rem;
-    }
-    .controls {
-      display: flex;
-      gap: 10px;
-      margin-bottom: 12px;
-    }
-    input, button {
-      border-radius: 10px;
-      border: 1px solid var(--border);
-      background: rgba(10, 19, 39, 0.88);
-      color: var(--text);
-      padding: 10px 12px;
-      font: inherit;
-    }
-    button {
-      cursor: pointer;
-      background: linear-gradient(130deg, #00d1ff, #6d7dff);
-      color: #031122;
-      border: 0;
-      font-weight: 700;
-    }
-    .status {
-      margin: 0 0 12px;
-      color: var(--muted);
-      font-size: 0.9rem;
-    }
-    .cards {
-      display: grid;
-      gap: 10px;
-    }
-    .card {
-      border: 1px solid var(--border);
-      background: var(--panel);
-      border-radius: var(--radius);
-      padding: 12px;
-    }
-    .row {
-      display: flex;
-      justify-content: space-between;
-      gap: 8px;
-      flex-wrap: wrap;
-      margin-bottom: 6px;
-    }
-    .k {
-      color: #9bb0d7;
-      font-size: 0.78rem;
-      text-transform: uppercase;
-      letter-spacing: 0.08em;
-      margin: 0 0 4px;
-    }
-    .v {
-      margin: 0;
-      font-size: 0.92rem;
-      color: #deebff;
-      word-break: break-word;
-    }
-    .metrics {
-      display: grid;
-      grid-template-columns: repeat(5, minmax(0, 1fr));
-      gap: 8px;
-      margin-top: 8px;
-    }
-    .metric {
-      border: 1px solid rgba(145, 171, 224, 0.2);
-      border-radius: 10px;
-      padding: 8px;
-      background: rgba(8, 16, 30, 0.7);
-    }
-    .mono {
-      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
-      font-size: 0.8rem;
-    }
-    .empty {
-      border: 1px dashed var(--border);
-      border-radius: var(--radius);
-      padding: 20px;
-      color: var(--muted);
-    }
-    @media (max-width: 900px) {
-      .metrics { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-    }
-    @media (max-width: 560px) {
-      .controls { flex-direction: column; }
-      .metrics { grid-template-columns: 1fr; }
-    }
+    .shell { width: min(1400px,96vw); margin: 0 auto; padding: 24px 0 60px; position: relative; z-index: 1; }
+
+    nav { display:flex; justify-content:space-between; align-items:center; padding:12px 18px; background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); margin-bottom:24px; }
+    .brand { font-weight:800; letter-spacing:.06em; font-size:.82rem; color:var(--accent); display:flex; align-items:center; gap:8px; }
+    .brand-dot { width:8px; height:8px; border-radius:50%; background:var(--accent); box-shadow:0 0 10px var(--accent); }
+    .nav-links { display:flex; gap:8px; }
+    .nav-links a { color:var(--muted); text-decoration:none; padding:6px 14px; border-radius:999px; font-size:.82rem; border:1px solid transparent; transition:all .2s; }
+    .nav-links a:hover { color:var(--text); border-color:var(--border); }
+    .nav-links a.active { color:var(--accent); border-color:rgba(56,189,248,.35); background:rgba(56,189,248,.07); }
+
+    .page-header { margin-bottom:20px; }
+    .page-header h1 { font-size:1.6rem; font-weight:800; letter-spacing:-.03em; margin-bottom:4px; }
+    .page-header p { color:var(--muted); font-size:.88rem; }
+
+    .toolbar { display:flex; gap:10px; flex-wrap:wrap; align-items:center; background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); padding:12px 16px; margin-bottom:16px; }
+    .toolbar input { background:var(--panel); border:1px solid var(--border); color:var(--text); padding:8px 11px; border-radius:8px; font:inherit; transition:border-color .2s; }
+    .toolbar input:focus { outline:none; border-color:var(--accent); }
+    .toolbar input[type="number"] { width:70px; }
+    .toolbar input[type="text"],.toolbar input[type="password"] { flex:1; min-width:180px; }
+
+    button { border:none; border-radius:8px; padding:8px 16px; font:inherit; font-weight:600; cursor:pointer; transition:all .15s; }
+    button:hover:not(:disabled) { filter:brightness(1.12); transform:translateY(-1px); }
+    button:disabled { opacity:.5; cursor:wait; }
+    .btn-primary { background:linear-gradient(135deg,var(--accent),var(--accent2)); color:#080f1e; }
+    .btn-ghost { background:var(--panel); color:var(--muted); border:1px solid var(--border); }
+    .btn-ok { background:rgba(52,211,153,.15); color:var(--ok); border:1px solid rgba(52,211,153,.3); }
+    .btn-sm { padding:6px 12px; font-size:.8rem; }
+
+    .status-bar { padding:9px 14px; border-radius:8px; font-size:.84rem; border:1px solid var(--border); color:var(--muted); background:var(--surface); margin-bottom:16px; }
+    .status-bar.ok    { border-color:rgba(52,211,153,.35); color:var(--ok); }
+    .status-bar.error { border-color:rgba(248,113,113,.35); color:var(--bad); }
+
+    .summary-bar { display:grid; grid-template-columns:repeat(5,1fr); gap:10px; margin-bottom:20px; }
+    .stat-card { background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); padding:14px 16px; }
+    .stat-card .k { font-size:.68rem; text-transform:uppercase; letter-spacing:.08em; color:var(--muted); font-weight:700; margin-bottom:5px; }
+    .stat-card .v { font-size:1.5rem; font-weight:800; letter-spacing:-.03em; }
+    .stat-card .v.good { color:var(--ok); }
+    .stat-card .v.warn { color:var(--warn); }
+    .stat-card .v.bad  { color:var(--bad); }
+
+    .table-wrap { background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); overflow:hidden; }
+    .table-toolbar { display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:10px; padding:12px 16px; border-bottom:1px solid var(--border); }
+    .search-input { background:var(--panel); border:1px solid var(--border); color:var(--text); padding:7px 11px; border-radius:8px; font:inherit; width:240px; }
+    .search-input:focus { outline:none; border-color:var(--accent); }
+    .row-count { font-size:.78rem; color:var(--muted); }
+
+    .tbl-scroll { overflow-x:auto; }
+    table { width:100%; border-collapse:collapse; min-width:860px; }
+    thead th { background:var(--panel); padding:10px 12px; text-align:left; font-size:.72rem; text-transform:uppercase; letter-spacing:.08em; color:var(--muted); font-weight:700; border-bottom:1px solid var(--border); white-space:nowrap; cursor:pointer; user-select:none; }
+    thead th:hover { color:var(--accent); }
+    thead th .si { opacity:.4; margin-left:4px; }
+    thead th.sorted .si { opacity:1; color:var(--accent); }
+
+    tbody tr { border-bottom:1px solid rgba(100,140,220,.08); transition:background .12s; cursor:pointer; }
+    tbody tr:last-child { border-bottom:none; }
+    tbody tr:hover { background:rgba(56,189,248,.06); }
+    tbody td { padding:10px 12px; vertical-align:middle; font-size:.84rem; }
+
+    .fit-pill { display:inline-block; padding:3px 10px; border-radius:999px; font-size:.76rem; font-weight:700; white-space:nowrap; }
+    .fit-pill.good,.fit-badge.good { color:var(--ok); background:rgba(52,211,153,.1); border:1px solid rgba(52,211,153,.3); }
+    .fit-pill.warn,.fit-badge.warn { color:var(--warn); background:rgba(251,191,36,.1); border:1px solid rgba(251,191,36,.3); }
+    .fit-pill.bad,.fit-badge.bad   { color:var(--bad); background:rgba(248,113,113,.1); border:1px solid rgba(248,113,113,.3); }
+
+    .job-link { color:var(--accent); text-decoration:none; font-size:.8rem; }
+    .job-link:hover { text-decoration:underline; }
+    .url-cell { max-width:180px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+
+    .chip-inline { display:inline-block; padding:2px 7px; border-radius:999px; font-size:.72rem; margin:1px; white-space:nowrap; }
+    .chip-inline.missing { background:rgba(248,113,113,.15); color:#fca5a5; border:1px solid rgba(248,113,113,.3); }
+    .chip-inline.matched { background:rgba(52,211,153,.12); color:#6ee7b7; border:1px solid rgba(52,211,153,.3); }
+    .chips-cell { max-width:200px; }
+
+    .empty { border:1px dashed var(--border); border-radius:var(--radius); padding:48px; text-align:center; color:var(--muted); }
+    .empty-icon { font-size:2rem; margin-bottom:8px; }
+
+    /* ── Detail drawer ── */
+    .drawer-overlay { position:fixed; inset:0; background:rgba(8,15,30,.65); backdrop-filter:blur(4px); z-index:100; opacity:0; pointer-events:none; transition:opacity .25s; }
+    .drawer-overlay.open { opacity:1; pointer-events:all; }
+    .drawer { position:fixed; top:0; right:0; bottom:0; width:min(820px,95vw); background:var(--surface); border-left:1px solid var(--border); z-index:101; transform:translateX(100%); transition:transform .28s cubic-bezier(.4,0,.2,1); overflow-y:auto; display:flex; flex-direction:column; }
+    .drawer.open { transform:translateX(0); }
+
+    .drawer-header { padding:20px 24px 16px; border-bottom:1px solid var(--border); display:flex; align-items:flex-start; gap:16px; position:sticky; top:0; background:var(--surface); z-index:2; }
+    .drawer-header-info { flex:1; min-width:0; }
+    .drawer-header-info h2 { font-size:1rem; font-weight:700; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; margin-bottom:3px; }
+    .drawer-header-info p { font-size:.78rem; color:var(--muted); }
+    .drawer-close { background:var(--panel); border:1px solid var(--border); color:var(--muted); width:32px; height:32px; border-radius:8px; font-size:1rem; display:flex; align-items:center; justify-content:center; flex-shrink:0; padding:0; }
+    .drawer-close:hover { color:var(--text); transform:none; filter:none; background:rgba(248,113,113,.15); border-color:rgba(248,113,113,.4); color:var(--bad); }
+
+    .drawer-body { padding:20px 24px; display:flex; flex-direction:column; gap:20px; flex:1; }
+
+    .drawer-actions { display:flex; gap:8px; flex-wrap:wrap; }
+
+    .d-section h3 { font-size:.7rem; text-transform:uppercase; letter-spacing:.09em; color:var(--muted); font-weight:700; margin-bottom:10px; padding-bottom:6px; border-bottom:1px solid var(--border); }
+
+    .score-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:10px; }
+    .score-box { background:var(--panel); border:1px solid var(--border); border-radius:10px; padding:12px 14px; text-align:center; }
+    .score-box .k { font-size:.68rem; text-transform:uppercase; letter-spacing:.07em; color:var(--muted); font-weight:700; margin-bottom:5px; }
+    .score-box .v { font-size:1.3rem; font-weight:800; }
+    .score-box .v.good { color:var(--ok); }
+    .score-box .v.warn { color:var(--warn); }
+    .score-box .v.bad  { color:var(--bad); }
+
+    .chips-wrap { display:flex; flex-wrap:wrap; gap:6px; }
+    .chip { padding:3px 10px; border-radius:999px; font-size:.78rem; border:1px solid var(--border); background:var(--panel); color:var(--text); }
+    .chip.missing { border-color:rgba(248,113,113,.5); color:#fff0f0; background:rgba(248,113,113,.18); }
+    .chip.matched { border-color:rgba(52,211,153,.5); color:#f0fff8; background:rgba(52,211,153,.18); }
+
+    .text-box { background:var(--panel); border:1px solid var(--border); border-radius:8px; padding:14px; font-size:.8rem; color:var(--muted); white-space:pre-wrap; line-height:1.65; max-height:280px; overflow-y:auto; font-family:"Courier New",monospace; }
+
+    .fit-big { display:inline-flex; align-items:center; gap:10px; margin-bottom:4px; }
+    .fit-big .num { font-size:2.4rem; font-weight:900; letter-spacing:-.05em; }
+
+    @media (max-width:900px) { .summary-bar { grid-template-columns:repeat(3,1fr); } .score-grid { grid-template-columns:repeat(2,1fr); } }
+    @media (max-width:580px) { .summary-bar { grid-template-columns:repeat(2,1fr); } nav { flex-direction:column; gap:8px; align-items:flex-start; } }
   </style>
 </head>
 <body>
-  <main class="shell">
-    <section class="top">
-      <div>
-        <h1 class="title">Request History</h1>
-        <p class="sub">All saved scoring runs: job link, uploaded resume snapshot, suggestions, and request time.</p>
-      </div>
-      <a href="/index.html">Back to Studio</a>
-    </section>
+<!-- Drawer overlay -->
+<div class="drawer-overlay" id="drawerOverlay"></div>
+<div class="drawer" id="drawer">
+  <div class="drawer-header">
+    <div class="drawer-header-info">
+      <h2 id="drawerTitle">—</h2>
+      <p id="drawerSubtitle">—</p>
+    </div>
+    <button class="drawer-close" id="drawerClose">✕</button>
+  </div>
+  <div class="drawer-body" id="drawerBody"></div>
+</div>
 
-    <section class="controls">
-      <input id="apiBase" value="http://localhost:8000" aria-label="API Base URL">
-      <input id="authToken" placeholder="Bearer token" aria-label="Bearer token">
-      <input id="limit" value="50" aria-label="Limit">
-      <button id="refreshBtn">Refresh</button>
-    </section>
+<div class="shell">
+  <nav>
+    <div class="brand"><span class="brand-dot"></span>CAREEROPS</div>
+    <div class="nav-links">
+      <a href="index.html">Fit Studio</a>
+      <a href="history.html" class="active">History</a>
+    </div>
+  </nav>
 
-    <p class="status" id="statusLine">Loading...</p>
-    <section class="cards" id="cards"></section>
-  </main>
+  <div class="page-header">
+    <h1>Scoring History</h1>
+    <p>Click any row for full details. Sort, search, and export as CSV.</p>
+  </div>
 
-  <script>
-    const apiBase = document.getElementById("apiBase");
-    const authToken = document.getElementById("authToken");
-    const limitInput = document.getElementById("limit");
-    const refreshBtn = document.getElementById("refreshBtn");
-    const statusLine = document.getElementById("statusLine");
-    const cards = document.getElementById("cards");
+  <div class="toolbar">
+    <input id="apiBase" type="text" value="http://localhost:8000" placeholder="API Base URL" style="width:190px;flex:none;">
+    <input id="authToken" type="password" placeholder="JWT bearer token">
+    <button class="btn-ghost btn-sm" id="showToken">Show</button>
+    <input id="limitInput" type="number" value="200" min="1" max="200" style="flex:none;">
+    <button class="btn-primary" id="refreshBtn">Load</button>
+    <button class="btn-ok btn-sm" id="csvBtn" style="margin-left:auto;" disabled>⬇ Export CSV</button>
+  </div>
 
-    function fmt(v, digits = 2) {
-      if (v === null || v === undefined || Number.isNaN(v)) return "-";
-      return Number(v).toFixed(digits);
-    }
+  <div class="status-bar" id="statusBar">Enter your token and click Load.</div>
 
-    function pct(v) {
-      if (v === null || v === undefined || Number.isNaN(v)) return "-";
-      return (Number(v) * 100).toFixed(1) + "%";
-    }
+  <div class="summary-bar" id="summaryBar" style="display:none;">
+    <div class="stat-card"><p class="k">Total Runs</p><p class="v" id="statTotal">0</p></div>
+    <div class="stat-card"><p class="k">Avg Fit</p><p class="v" id="statAvgFit">—</p></div>
+    <div class="stat-card"><p class="k">Best Fit</p><p class="v good" id="statBestFit">—</p></div>
+    <div class="stat-card"><p class="k">Avg Skill Cov.</p><p class="v" id="statAvgSkill">—</p></div>
+    <div class="stat-card"><p class="k">Avg ATS Risk</p><p class="v" id="statAvgAts">—</p></div>
+  </div>
 
-    function render(rows) {
-      cards.innerHTML = "";
-      if (!rows || !rows.length) {
-        cards.innerHTML = "<div class='empty'>No history records found.</div>";
-        return;
-      }
-      rows.forEach((row) => {
-        const div = document.createElement("article");
-        div.className = "card";
-        const changes = row.suggested_changes_json || {};
-        const recs = (changes.recommendations || []).map((r) => r.message || r.type || "Recommendation");
-        div.innerHTML = `
-          <div class="row">
-            <div>
-              <p class="k">Requested At</p>
-              <p class="v">${row.requested_at || "-"}</p>
-            </div>
-            <div>
-              <p class="k">Resume File</p>
-              <p class="v">${row.resume_filename || "-"}</p>
-            </div>
-          </div>
-          <div>
-            <p class="k">Job URL</p>
-            <p class="v"><a class="v" href="${row.job_url}" target="_blank" rel="noreferrer">${row.job_url}</a></p>
-          </div>
-          <div class="metrics">
-            <div class="metric"><p class="k">Fit</p><p class="v">${fmt(row.fit_index)}</p></div>
-            <div class="metric"><p class="k">Semantic</p><p class="v">${pct(row.semantic_score)}</p></div>
-            <div class="metric"><p class="k">Keyword</p><p class="v">${pct(row.keyword_coverage)}</p></div>
-            <div class="metric"><p class="k">ATS Risk</p><p class="v">${pct(row.ats_risk_score)}</p></div>
-            <div class="metric"><p class="k">ML Prob</p><p class="v">${pct(row.ml_fit_probability)}</p></div>
-          </div>
-          <div style="margin-top:8px;">
-            <p class="k">Suggested Resume Draft</p>
-            <p class="v mono">${(row.suggested_resume_text || "-").slice(0, 450)}</p>
-          </div>
-          <div style="margin-top:8px;">
-            <p class="k">Suggested Changes</p>
-            <p class="v">${recs.length ? recs.join(" | ") : "-"}</p>
-          </div>
-        `;
-        cards.appendChild(div);
-      });
-    }
+  <div id="tableArea">
+    <div class="empty"><div class="empty-icon">📋</div><p>No history loaded yet.</p></div>
+  </div>
+</div>
 
-    async function loadHistory() {
-      const base = apiBase.value.replace(/\/$/, "");
-      const limit = Math.max(1, Math.min(200, Number(limitInput.value) || 50));
-      statusLine.textContent = "Loading...";
-      try {
-        const res = await fetch(`${base}/api/v1/matches/history/list?limit=${limit}&offset=0`, {
-          headers: authHeaders()
-        });
-        if (!res.ok) {
-          const txt = await res.text();
-          throw new Error(`Request failed: ${res.status} ${txt}`);
-        }
-        const data = await res.json();
-        render(data.history || []);
-        statusLine.textContent = `Loaded ${data.count || 0} records.`;
-      } catch (err) {
-        statusLine.textContent = "Error: " + err.message;
-      }
-    }
+<script src="https://unpkg.com/pdf-lib@1.17.1/dist/pdf-lib.min.js"></script>
+<script type="module">
+  const apiBase    = () => document.getElementById("apiBase").value.replace(/\/$/,"");
+  const getToken   = () => document.getElementById("authToken").value.trim();
+  const authHd     = () => ({ Authorization: "Bearer " + getToken() });
 
-    refreshBtn.addEventListener("click", loadHistory);
-    authToken.value = localStorage.getItem("careerops_auth_token") || "";
-    authToken.addEventListener("input", () => {
-      localStorage.setItem("careerops_auth_token", authToken.value.trim());
+  document.getElementById("authToken").value = localStorage.getItem("careerops_token") || "";
+  document.getElementById("authToken").addEventListener("input", e => localStorage.setItem("careerops_token", e.target.value.trim()));
+  document.getElementById("showToken").addEventListener("click", () => {
+    const inp = document.getElementById("authToken");
+    inp.type = inp.type === "password" ? "text" : "password";
+  });
+
+  function setStatus(msg, type="") {
+    const el = document.getElementById("statusBar");
+    el.textContent = msg; el.className = "status-bar" + (type ? " "+type : "");
+  }
+
+  const pct  = v => { const n=Number(v); return Number.isNaN(n) ? "—" : (n*100).toFixed(1)+"%"; };
+  const fmt  = (v,d=1) => { const n=Number(v); return Number.isNaN(n) ? "—" : n.toFixed(d); };
+  const fitC = v => v>=70 ? "good" : v>=45 ? "warn" : "bad";
+  const shortUrl = url => { try { return new URL(url).hostname; } catch { return url; } };
+  function timeAgo(ts) {
+    if (!ts) return "—";
+    const d = Math.floor((Date.now()-new Date(ts))/1000);
+    if (d<60) return d+"s ago";
+    if (d<3600) return Math.floor(d/60)+"m ago";
+    if (d<86400) return Math.floor(d/3600)+"h ago";
+    return Math.floor(d/86400)+"d ago";
+  }
+
+  let _allRows=[], _sortCol="requested_at", _sortAsc=false;
+
+  // ── summary ──────────────────────────────────────────────────────
+  function renderSummary(rows) {
+    if (!rows.length) return;
+    const fits  = rows.map(r=>Number(r.fit_index)).filter(n=>!Number.isNaN(n));
+    const skls  = rows.map(r=>Number(r.keyword_coverage)).filter(n=>!Number.isNaN(n));
+    const atss  = rows.map(r=>Number(r.ats_risk_score)).filter(n=>!Number.isNaN(n));
+    document.getElementById("statTotal").textContent   = rows.length;
+    document.getElementById("statAvgFit").textContent  = fits.length ? fmt(fits.reduce((a,b)=>a+b,0)/fits.length) : "—";
+    document.getElementById("statBestFit").textContent = fits.length ? fmt(Math.max(...fits)) : "—";
+    document.getElementById("statAvgSkill").textContent= skls.length ? pct(skls.reduce((a,b)=>a+b,0)/skls.length) : "—";
+    document.getElementById("statAvgAts").textContent  = atss.length ? pct(atss.reduce((a,b)=>a+b,0)/atss.length) : "—";
+    document.getElementById("summaryBar").style.display = "grid";
+  }
+
+  // ── table ─────────────────────────────────────────────────────────
+  const COLS = [
+    {key:"requested_at",    label:"Date"},
+    {key:"resume_filename", label:"Resume"},
+    {key:"job_url",         label:"Job"},
+    {key:"fit_index",       label:"Fit"},
+    {key:"keyword_coverage",label:"Skill Cov."},
+    {key:"semantic_score",  label:"Semantic"},
+    {key:"ats_risk_score",  label:"ATS Risk"},
+    {key:"ml_fit_probability",label:"ML Prob"},
+    {key:"_missing",        label:"Missing Skills"},
+    {key:"_matched",        label:"Matched Skills"},
+  ];
+
+  function sortRows(rows) {
+    return [...rows].sort((a,b) => {
+      let av=a[_sortCol]??"", bv=b[_sortCol]??"";
+      if (!Number.isNaN(Number(av))&&!Number.isNaN(Number(bv))) {av=Number(av);bv=Number(bv);}
+      return _sortAsc ? (av<bv?-1:av>bv?1:0) : (av>bv?-1:av<bv?1:0);
     });
-    loadHistory();
-  </script>
+  }
+  function filterRows(rows,q) {
+    if (!q) return rows;
+    q=q.toLowerCase();
+    return rows.filter(r =>
+      (r.resume_filename||"").toLowerCase().includes(q) ||
+      (r.job_url||"").toLowerCase().includes(q) ||
+      ((r.suggested_changes_json?.top_missing_keywords||[]).join(" ").toLowerCase().includes(q)) ||
+      ((r.suggested_changes_json?.top_matched_keywords||[]).join(" ").toLowerCase().includes(q))
+    );
+  }
+
+  function chipsHtml(arr,cls,max=3) {
+    if (!arr?.length) return "<span style='color:var(--muted);font-size:.75rem;'>—</span>";
+    const vis = arr.slice(0,max).map(k=>`<span class="chip-inline ${cls}">${k}</span>`).join("");
+    const ext = arr.length>max ? `<span class="chip-inline" style="background:var(--panel);color:var(--muted);">+${arr.length-max}</span>` : "";
+    return vis+ext;
+  }
+
+  function renderTable(rows) {
+    const area = document.getElementById("tableArea");
+    if (!rows.length) {
+      area.innerHTML = '<div class="empty"><div class="empty-icon">📭</div><p>No records match.</p></div>';
+      return;
+    }
+    const thead = COLS.map(c => {
+      const sorted = _sortCol===c.key;
+      const icon   = sorted ? (_sortAsc?"↑":"↓") : "↕";
+      const nosort = c.key.startsWith("_");
+      return `<th data-col="${c.key}" class="${sorted?"sorted":""}" ${nosort?'style="cursor:default"':""}>
+        ${c.label}${nosort?"":` <span class="si">${icon}</span>`}
+      </th>`;
+    }).join("");
+
+    const tbody = rows.map((row) => {
+      const ch  = row.suggested_changes_json||{};
+      const mis = ch.top_missing_keywords||[];
+      const mat = ch.top_matched_keywords||[];
+      const fit = Number(row.fit_index);
+      const dt  = row.requested_at ? new Date(row.requested_at).toLocaleString() : "—";
+      return `<tr data-id="${row.id}">
+        <td title="${dt}" style="white-space:nowrap;color:var(--muted);font-size:.78rem;">${timeAgo(row.requested_at)}<br><span style="font-size:.72rem;">${dt}</span></td>
+        <td style="white-space:nowrap;">📄 ${row.resume_filename||"—"}</td>
+        <td class="url-cell">${row.job_url?`<a class="job-link" href="${row.job_url}" target="_blank" rel="noreferrer" title="${row.job_url}" onclick="event.stopPropagation()">${shortUrl(row.job_url)}</a>`:"—"}</td>
+        <td><span class="fit-pill ${fitC(fit)}">${fmt(fit)}</span></td>
+        <td>${pct(row.keyword_coverage)}</td>
+        <td>${fmt(row.semantic_score,2)}</td>
+        <td>${pct(row.ats_risk_score)}</td>
+        <td>${row.ml_fit_probability!=null?pct(row.ml_fit_probability):"—"}</td>
+        <td class="chips-cell">${chipsHtml(mis,"missing")}</td>
+        <td class="chips-cell">${chipsHtml(mat,"matched")}</td>
+      </tr>`;
+    }).join("");
+
+    area.innerHTML = `
+      <div class="table-wrap">
+        <div class="table-toolbar">
+          <div style="display:flex;align-items:center;gap:10px;">
+            <input class="search-input" id="searchInput" placeholder="Search resume, job, skills…" type="text">
+            <span class="row-count" id="rowCount">${rows.length} record${rows.length===1?"":"s"}</span>
+          </div>
+        </div>
+        <div class="tbl-scroll">
+          <table><thead><tr>${thead}</tr></thead><tbody>${tbody}</tbody></table>
+        </div>
+      </div>`;
+
+    // sort
+    area.querySelectorAll("thead th[data-col]").forEach(th => {
+      th.addEventListener("click", () => {
+        const col = th.dataset.col;
+        if (col.startsWith("_")) return;
+        if (_sortCol===col) _sortAsc=!_sortAsc; else { _sortCol=col; _sortAsc=false; }
+        renderTable(sortRows(filterRows(_allRows, document.getElementById("searchInput")?.value||"")));
+      });
+    });
+
+    // row click → drawer
+    area.querySelectorAll("tbody tr").forEach(tr => {
+      tr.addEventListener("click", () => {
+        const row = _allRows.find(r=>r.id===tr.dataset.id);
+        if (row) openDrawer(row);
+      });
+    });
+
+    // search
+    document.getElementById("searchInput").addEventListener("input", e => {
+      const filtered = sortRows(filterRows(_allRows, e.target.value));
+      document.getElementById("rowCount").textContent = `${filtered.length} record${filtered.length===1?"":"s"}`;
+      renderTable(filtered);
+    });
+  }
+
+  // ── drawer ────────────────────────────────────────────────────────
+  function openDrawer(row) {
+    const ch      = row.suggested_changes_json||{};
+    const missing = ch.top_missing_keywords||[];
+    const matched = ch.top_matched_keywords||[];
+    const recs    = (ch.recommendations||[]).map(r=>r.message||"").filter(Boolean);
+    const fit     = Number(row.fit_index);
+    const cls     = fitC(fit);
+
+    document.getElementById("drawerTitle").textContent    = "📄 " + (row.resume_filename||"Resume");
+    document.getElementById("drawerSubtitle").textContent = row.requested_at ? new Date(row.requested_at).toLocaleString() : "—";
+
+    document.getElementById("drawerBody").innerHTML = `
+      <!-- Actions -->
+      <div class="d-section">
+        <h3>Actions</h3>
+        <div class="drawer-actions">
+          ${row.job_url ? `<a href="${row.job_url}" target="_blank" rel="noreferrer" style="text-decoration:none;"><button class="btn-ghost btn-sm">🔗 Open Job Posting</button></a>` : ""}
+          ${row.resume_text_used ? `<button class="btn-ok btn-sm" id="dlOriginalBtn">⬇ Download Resume PDF</button>` : ""}
+          ${row.suggested_resume_text ? `<button class="btn-ghost btn-sm" id="dlSuggestedBtn">⬇ Download Suggested Resume</button>` : ""}
+        </div>
+      </div>
+
+      <!-- Scores -->
+      <div class="d-section">
+        <h3>Scores</h3>
+        <div style="margin-bottom:12px;">
+          <div class="fit-big">
+            <span class="num ${cls}">${fmt(fit)}</span>
+            <span class="fit-pill ${cls}" style="font-size:.9rem;">Fit Index</span>
+          </div>
+        </div>
+        <div class="score-grid">
+          <div class="score-box"><p class="k">Skill Coverage</p><p class="v ${fitC(Number(row.keyword_coverage)*100)}">${pct(row.keyword_coverage)}</p></div>
+          <div class="score-box"><p class="k">Semantic Score</p><p class="v">${fmt(row.semantic_score,3)}</p></div>
+          <div class="score-box"><p class="k">ATS Risk</p><p class="v ${Number(row.ats_risk_score)>0.5?"bad":"ok"}">${pct(row.ats_risk_score)}</p></div>
+          <div class="score-box"><p class="k">ML Probability</p><p class="v">${row.ml_fit_probability!=null?pct(row.ml_fit_probability):"—"}</p></div>
+          <div class="score-box"><p class="k">Missing Skills</p><p class="v bad">${missing.length}</p></div>
+          <div class="score-box"><p class="k">Matched Skills</p><p class="v good">${matched.length}</p></div>
+        </div>
+      </div>
+
+      <!-- Missing skills -->
+      ${missing.length ? `
+      <div class="d-section">
+        <h3>Missing Skills (${missing.length})</h3>
+        <div class="chips-wrap">${missing.map(k=>`<span class="chip missing">${k}</span>`).join("")}</div>
+      </div>` : ""}
+
+      <!-- Matched skills -->
+      ${matched.length ? `
+      <div class="d-section">
+        <h3>Matched Skills (${matched.length})</h3>
+        <div class="chips-wrap">${matched.map(k=>`<span class="chip matched">${k}</span>`).join("")}</div>
+      </div>` : ""}
+
+      <!-- Recommendations -->
+      ${recs.length ? `
+      <div class="d-section">
+        <h3>Recommendations</h3>
+        <ul style="list-style:none;display:flex;flex-direction:column;gap:6px;">
+          ${recs.map(r=>`<li style="font-size:.84rem;color:var(--muted);display:flex;gap:8px;"><span style="color:var(--accent);">→</span><span>${r}</span></li>`).join("")}
+        </ul>
+      </div>` : ""}
+
+      <!-- Resume text used -->
+      ${row.resume_text_used ? `
+      <div class="d-section">
+        <h3>Resume Text (as submitted)</h3>
+        <div class="text-box">${escHtml(row.resume_text_used)}</div>
+      </div>` : ""}
+
+      <!-- Suggested resume -->
+      ${row.suggested_resume_text ? `
+      <div class="d-section">
+        <h3>Suggested Resume Draft</h3>
+        <div class="text-box">${escHtml(row.suggested_resume_text)}</div>
+      </div>` : ""}
+    `;
+
+    // download original resume as PDF
+    const dlOrig = document.getElementById("dlOriginalBtn");
+    if (dlOrig) dlOrig.addEventListener("click", () => generatePdf(row.resume_text_used, (row.resume_filename||"resume").replace(/\.[^.]+$/,"") + "_original.pdf"));
+
+    // download suggested resume as PDF
+    const dlSug = document.getElementById("dlSuggestedBtn");
+    if (dlSug) dlSug.addEventListener("click", () => generatePdf(row.suggested_resume_text, (row.resume_filename||"resume").replace(/\.[^.]+$/,"") + "_suggested.pdf"));
+
+    document.getElementById("drawerOverlay").classList.add("open");
+    document.getElementById("drawer").classList.add("open");
+    document.body.style.overflow = "hidden";
+  }
+
+  function closeDrawer() {
+    document.getElementById("drawerOverlay").classList.remove("open");
+    document.getElementById("drawer").classList.remove("open");
+    document.body.style.overflow = "";
+  }
+
+  document.getElementById("drawerClose").addEventListener("click", closeDrawer);
+  document.getElementById("drawerOverlay").addEventListener("click", closeDrawer);
+  document.addEventListener("keydown", e => { if (e.key==="Escape") closeDrawer(); });
+
+  function escHtml(s) { return (s||"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;"); }
+
+  // ── PDF generation from text ──────────────────────────────────────
+  async function generatePdf(text, filename) {
+    if (!text?.trim()) return;
+    const { PDFDocument, rgb, StandardFonts } = globalThis.PDFLib;
+    const pdfDoc   = await PDFDocument.create();
+    const font     = await pdfDoc.embedFont(StandardFonts.Helvetica);
+    const fontBold = await pdfDoc.embedFont(StandardFonts.HelveticaBold);
+    const pageW=612, pageH=792, margin=50, maxW=pageW-margin*2;
+    let page = pdfDoc.addPage([pageW,pageH]);
+    let y    = pageH-margin;
+
+    const addPage = () => { page=pdfDoc.addPage([pageW,pageH]); y=pageH-margin; };
+    const wrap = (str,size) => {
+      const words=str.split(" "); const lines=[]; let line="";
+      for (const w of words) {
+        const c=line?line+" "+w:w;
+        if (font.widthOfTextAtSize(c,size)>maxW&&line){lines.push(line);line=w;}
+        else line=c;
+      }
+      if (line) lines.push(line);
+      return lines;
+    };
+
+    for (const raw of text.split("\n")) {
+      const line=raw.trim();
+      if (!line) { y-=6; continue; }
+      const isHeading=line.length>=3&&line===line.toUpperCase()&&/[A-Z]/.test(line);
+      if (isHeading) {
+        if (y<margin+22){addPage();}
+        y-=4;
+        page.drawText(line,{x:margin,y,size:11,font:fontBold,color:rgb(0.05,0.47,0.75)});
+        y-=13;
+        page.drawLine({start:{x:margin,y},end:{x:pageW-margin,y},thickness:.5,color:rgb(0.05,0.47,0.75)});
+        y-=8;
+      } else {
+        for (const wl of wrap(line,10)) {
+          if (y<margin+14) addPage();
+          page.drawText(wl,{x:margin,y,size:10,font,color:rgb(0.08,0.08,0.08)});
+          y-=14;
+        }
+      }
+    }
+
+    const bytes=await pdfDoc.save();
+    const blob =new Blob([bytes],{type:"application/pdf"});
+    const url  =URL.createObjectURL(blob);
+    const a    =Object.assign(document.createElement("a"),{href:url,download:filename});
+    a.click(); URL.revokeObjectURL(url);
+  }
+
+  // ── CSV export ────────────────────────────────────────────────────
+  function exportCsv(rows) {
+    const headers=["Date","Resume File","Job URL","Fit Index","Skill Coverage","Semantic Score","ATS Risk","ML Probability","Missing Skills","Matched Skills"];
+    const esc=v=>`"${String(v??"").replace(/"/g,'""')}"`;
+    const lines=[headers.join(",")];
+    for (const r of rows) {
+      const ch=r.suggested_changes_json||{};
+      lines.push([
+        esc(r.requested_at?new Date(r.requested_at).toISOString():""),
+        esc(r.resume_filename),
+        esc(r.job_url),
+        esc(r.fit_index!=null?Number(r.fit_index).toFixed(2):""),
+        esc(r.keyword_coverage!=null?(Number(r.keyword_coverage)*100).toFixed(1)+"%":""),
+        esc(r.semantic_score!=null?Number(r.semantic_score).toFixed(4):""),
+        esc(r.ats_risk_score!=null?(Number(r.ats_risk_score)*100).toFixed(1)+"%":""),
+        esc(r.ml_fit_probability!=null?(Number(r.ml_fit_probability)*100).toFixed(1)+"%":""),
+        esc((ch.top_missing_keywords||[]).join(", ")),
+        esc((ch.top_matched_keywords||[]).join(", ")),
+      ].join(","));
+    }
+    const blob=new Blob([lines.join("\n")],{type:"text/csv"});
+    const url =URL.createObjectURL(blob);
+    const a   =Object.assign(document.createElement("a"),{href:url,download:"careerops_history.csv"});
+    a.click(); URL.revokeObjectURL(url);
+  }
+
+  document.getElementById("csvBtn").addEventListener("click", () => {
+    const q=document.getElementById("searchInput")?.value||"";
+    exportCsv(sortRows(filterRows(_allRows,q)));
+  });
+
+  // ── load ──────────────────────────────────────────────────────────
+  async function loadHistory() {
+    if (!getToken()){setStatus("Paste your JWT bearer token above.","error");return;}
+    const limit=Math.max(1,Math.min(200,Number(document.getElementById("limitInput").value)||200));
+    document.getElementById("refreshBtn").disabled=true;
+    setStatus("Loading…");
+    try {
+      const res  = await fetch(`${apiBase()}/api/v1/matches/history/list?limit=${limit}&offset=0`,{headers:authHd()});
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.detail||JSON.stringify(data));
+      _allRows=data.history||[];
+      renderSummary(_allRows);
+      renderTable(sortRows(_allRows));
+      document.getElementById("csvBtn").disabled=!_allRows.length;
+      setStatus(`Loaded ${_allRows.length} record${_allRows.length===1?"":"s"}.`,"ok");
+    } catch(e) {
+      setStatus("Error: "+e.message,"error");
+    } finally {
+      document.getElementById("refreshBtn").disabled=false;
+    }
+  }
+
+  document.getElementById("refreshBtn").addEventListener("click",loadHistory);
+  if (getToken()) await loadHistory();
+</script>
 </body>
 </html>
-    function authHeaders() {
-      const token = (authToken.value || "").trim();
-      if (!token) return {};
-      return { Authorization: "Bearer " + token };
-    }

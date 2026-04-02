@@ -24,5 +24,8 @@ pip-wheel-metadata/
 .pytest_cache/
 .mypy_cache/
 
+# ESCO skills cache (downloaded at runtime)
+**/.esco_cache/
+
 # Docker
 *.log
